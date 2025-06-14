@@ -1,0 +1,121 @@
+[
+  {
+    "id": 1,
+    "novel_id": 1,
+    "title": "Event 1",
+    "description": "Three months ago, when people still believed in tomorrows",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:03:41.139Z"
+  },
+  {
+    "id": 1,
+    "novel_id": 1,
+    "title": "Event 2",
+    "description": "Not after what had driven me to this frozen monument to human folly in the first place",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:03:41.142Z"
+  },
+  {
+    "id": 1,
+    "novel_id": 1,
+    "title": "Event 3",
+    "description": "</p><p>My hand found the door handle",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:03:41.145Z"
+  },
+  {
+    "id": 2,
+    "novel_id": 1,
+    "title": "Event 1",
+    "description": "Three months ago, when people still believed in tomorrows",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:04:01.974Z"
+  },
+  {
+    "id": 2,
+    "novel_id": 1,
+    "title": "Event 2",
+    "description": "Not after what had driven me to this frozen monument to human folly in the first place",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:04:01.978Z"
+  },
+  {
+    "id": 2,
+    "novel_id": 1,
+    "title": "Event 3",
+    "description": "</p><p>My hand found the door handle",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:04:01.981Z"
+  },
+  {
+    "id": 3,
+    "novel_id": 1,
+    "title": "Event 1",
+    "description": "Three months ago, when people still believed in tomorrows",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:04:19.850Z"
+  },
+  {
+    "id": 3,
+    "novel_id": 1,
+    "title": "Event 2",
+    "description": "Not after what had driven me to this frozen monument to human folly in the first place",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:04:19.852Z"
+  },
+  {
+    "id": 3,
+    "novel_id": 1,
+    "title": "Event 3",
+    "description": "</p><p>My hand found the door handle",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:04:19.854Z"
+  },
+  {
+    "id": 4,
+    "novel_id": 1,
+    "title": "The October Catastrophe",
+    "description": "Three months ago in October, a catastrophic event occurred at Millfield Industries that caused the complete abandonment of the building. This marks the transition from normal corporate operations to whatever supernatural disaster befell the company.",
+    "created_at": "2025-06-14T05:37:45.151Z"
+  },
+  {
+    "id": 5,
+    "novel_id": 1,
+    "title": "Entry into Millfield Industries",
+    "description": "The narrator enters the abandoned Millfield Industries building with a flashlight, discovering the frozen, empty reception area and beginning their ascent through the stairwell. They hear mysterious scratching sounds and detect organic smells mixed with the cold air.",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:37:50.095Z"
+  },
+  {
+    "id": 6,
+    "novel_id": 1,
+    "title": "Discovery of Fresh Footprints",
+    "description": "On the seventh floor, the narrator discovers a door covered in elaborate scratched symbols. Upon opening it, they find a corridor with deep wall scratches and fresh footprints in the frost, revealing they are not alone in the building.",
+    "chapter_id": 1,
+    "created_at": "2025-06-14T05:37:54.885Z"
+  },
+  {
+    "id": 7,
+    "novel_id": 1,
+    "title": "The Vanishing Trail",
+    "description": "The narrator follows the mysterious footprints down the corridor until they abruptly end in the middle of the hallway. The footprints are small and delicate, suggesting they belong to a young woman, and they disappear as if their owner vanished into thin air.",
+    "chapter_id": 2,
+    "created_at": "2025-06-14T05:37:59.813Z"
+  },
+  {
+    "id": 8,
+    "novel_id": 1,
+    "title": "First Contact with the Mystery Woman",
+    "description": "A mysterious young woman with a European accent speaks to the narrator from the shadows, revealing she knows about Millfield Industries' dark secrets. She explains that the company 'reached too far' and 'dug too deep,' finding things that should have stayed buried.",
+    "chapter_id": 2,
+    "created_at": "2025-06-14T05:38:06.720Z"
+  },
+  {
+    "id": 9,
+    "novel_id": 1,
+    "title": "The Self-Opening Door",
+    "description": "The narrator discovers a special door covered in elaborate, purposeful scratched symbols. When asked if this is where 'it' was found, the mystery woman cryptically responds 'That's where it found me.' The door then opens by itself, creating a new cliffhanger.",
+    "chapter_id": 2,
+    "created_at": "2025-06-14T05:38:11.434Z"
+  }
+]

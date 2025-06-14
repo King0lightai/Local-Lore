@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  * {
+    @apply border-writer-border;
+  }
+  
+  body {
+    @apply bg-writer-bg text-writer-text font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-writer-heading font-semibold;
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-writer-bg;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-writer-subtle rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-writer-text/30;
+  }
+  
+  /* Selection styling */
+  ::selection {
+    @apply bg-writer-accent/20 text-writer-heading;
+  }
+  
+  /* Focus ring styling */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg;
+  }
+}
+
+@layer components {
+  /* Button Components */
+  .btn-primary {
+    @apply px-4 py-2 bg-writer-accent text-white rounded-lg hover:bg-writer-accent/90 
+           focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
+           transition-all duration-200 font-medium text-sm;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 bg-writer-surface border border-writer-border text-writer-text rounded-lg 
+           hover:bg-writer-muted hover:border-writer-subtle
+           focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
+           transition-all duration-200 font-medium text-sm;
+  }
+  
+  .btn-ghost {
+    @apply px-3 py-2 text-writer-text rounded-lg hover:bg-writer-muted
+           focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
+           transition-all duration-200 font-medium text-sm;
+  }
+  
+  .btn-icon {
+    @apply p-2 text-writer-subtle hover:text-writer-text hover:bg-writer-muted rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
+           transition-all duration-200;
+  }
+  
+  /* Input Components */
+  .input-primary {
+    @apply w-full px-3 py-2 bg-writer-surface border border-writer-border rounded-lg text-writer-text
+           placeholder:text-writer-subtle focus:outline-none focus:ring-2 focus:ring-writer-accent/50 
+           focus:border-writer-accent transition-all duration-200;
+  }
+  
+  .textarea-primary {
+    @apply w-full px-3 py-2 bg-writer-surface border border-writer-border rounded-lg text-writer-text
+           placeholder:text-writer-subtle focus:outline-none focus:ring-2 focus:ring-writer-accent/50 
+           focus:border-writer-accent transition-all duration-200 resize-none;
+  }
+  
+  /* Card Components */
+  .card {
+    @apply bg-writer-surface border border-writer-border rounded-xl shadow-soft;
+  }
+  
+  .card-header {
+    @apply p-4 border-b border-writer-border;
+  }
+  
+  .card-content {
+    @apply p-4;
+  }
+  
+  /* Sidebar Components */
+  .sidebar {
+    @apply bg-writer-surface border-r border-writer-border;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center px-3 py-2 text-writer-text hover:bg-writer-muted rounded-lg
+           transition-all duration-200 cursor-pointer;
+  }
+  
+  .sidebar-item.active {
+    @apply bg-writer-accent/10 text-writer-accent border-r-2 border-writer-accent;
+  }
+  
+  /* Modal Components */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50;
+  }
+  
+  .modal-content {
+    @apply bg-writer-surface border border-writer-border rounded-2xl shadow-hard max-h-[90vh] overflow-hidden;
+  }
+  
+  /* Toast Components */
+  .toast {
+    @apply px-4 py-3 rounded-lg shadow-medium border backdrop-blur-sm;
+  }
+  
+  .toast.success {
+    @apply bg-writer-success/10 border-writer-success/20 text-writer-success;
+  }
+  
+  .toast.error {
+    @apply bg-writer-error/10 border-writer-error/20 text-writer-error;
+  }
+  
+  .toast.warning {
+    @apply bg-writer-warning/10 border-writer-warning/20 text-writer-warning;
+  }
+  
+  .toast.info {
+    @apply bg-writer-info/10 border-writer-info/20 text-writer-info;
+  }
+  
+  /* Editor Styles */
+  .editor-content {
+    @apply font-serif text-lg leading-relaxed text-gray-800;
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+  
+  .editor-content p {
+    @apply mb-6;
+  }
+  
+  .editor-content h1 {
+    @apply text-3xl font-bold mb-8 mt-12 text-gray-900;
+  }
+  
+  .editor-content h2 {
+    @apply text-2xl font-semibold mb-6 mt-10 text-gray-900;
+  }
+  
+  .editor-content h3 {
+    @apply text-xl font-semibold mb-4 mt-8 text-gray-900;
+  }
+  
+  .editor-content blockquote {
+    @apply border-l-4 border-writer-accent/30 pl-4 italic text-writer-subtle;
+  }
+  
+  .editor-content ul, .editor-content ol {
+    @apply ml-6 mb-4;
+  }
+  
+  .editor-content li {
+    @apply mb-1;
+  }
+  
+  /* Writing Focus Mode */
+  .focus-mode {
+    @apply max-w-3xl mx-auto px-8;
+  }
+  
+  .focus-mode .editor-content {
+    @apply text-xl leading-relaxed;
+    line-height: 1.8;
+  }
+  
+  /* Typewriter Mode */
+  .typewriter-mode {
+    padding-top: 40vh;
+    padding-bottom: 40vh;
+  }
+  
+  /* Outline Tree Styles */
+  .outline-tree {
+    @apply space-y-1;
+  }
+  
+  .outline-section {
+    @apply border-l-2 border-transparent hover:border-writer-accent/30 transition-all duration-200;
+  }
+  
+  .outline-section.active {
+    @apply border-writer-accent bg-writer-accent/5;
+  }
+  
+  /* Tab Navigation */
+  .tab-nav {
+    @apply flex space-x-1 bg-writer-muted p-1 rounded-lg;
+  }
+  
+  .tab-nav button {
+    @apply flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+  }
+  
+  .tab-nav button.active {
+    @apply bg-writer-surface text-writer-heading shadow-soft;
+  }
+  
+  .tab-nav button:not(.active) {
+    @apply text-writer-subtle hover:text-writer-text hover:bg-writer-surface/50;
+  }
+  
+  /* Animation Classes */
+  .animate-in {
+    @apply animate-fade-in;
+  }
+  
+  .slide-up {
+    @apply animate-slide-up;
+  }
+  
+  .slide-down {
+    @apply animate-slide-down;
+  }
+  
+  .scale-in {
+    @apply animate-scale-in;
+  }
+}

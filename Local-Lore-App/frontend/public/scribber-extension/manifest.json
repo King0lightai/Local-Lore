@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Scribber AI Bridge",
+  "version": "1.0.0",
+  "description": "Connects Scribber to Claude Desktop for AI writing assistance",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["http://localhost:3000/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:3000/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

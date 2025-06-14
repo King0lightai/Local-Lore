@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(npm install)",
+      "Bash(npm rebuild:*)",
+      "Bash(node server.js)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm install:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(fuser:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run:*)",
+      "Bash(sqlite3:*)",
+      "Bash(node:*)",
+      "Bash(rg:*)",
+      "Bash(npm start)",
+      "Bash(cp:*)",
+      "Bash(sed:*)",
+      "Bash(find:*)"
+    ],
+    "deny": []
+  }
+}

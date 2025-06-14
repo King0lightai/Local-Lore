@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "local-lore": {
+      "command": "node",
+      "args": ["C:/Users/zeepe/OneDrive/Desktop/Local-Lore/Local-Lore-App/mcp-server/server.js"],
+      "env": {
+        "LOCAL_LORE_API": "http://localhost:3001/api"
+      }
+    }
+  }
+}

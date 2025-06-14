@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "novel_id": 1,
+    "name": "The Narrator",
+    "description": "The protagonist of the story - a first-person narrator who has come to the abandoned Millfield Industries building searching for something. They have a background that includes \"climbing corporate ladders\" and have experienced something that drove them to this frozen building. They carry a flashlight and wear boots, suggesting they came prepared for the harsh conditions.",
+    "traits": "Determined, haunted by past experiences, methodical, brave but cautious, has corporate background, driven by a mysterious purpose",
+    "created_at": "2025-06-14T05:33:15.976Z"
+  },
+  {
+    "id": 2,
+    "novel_id": 1,
+    "name": "The Voice/Mystery Woman",
+    "description": "A mysterious young woman encountered in the frozen Millfield Industries building. She speaks with a soft voice that has a European accent softened by years in America. She appears to know what happened at Millfield Industries and hints at dark secrets involving things that were \"dug too deep.\" Her footprints are smaller and more delicate than the narrator's, and she moves barefoot through the frozen building.",
+    "traits": "Mysterious, knowledgeable about the building's secrets, European accent, young female voice, elusive, cryptic in speech, moves silently, connected to whatever happened at Millfield",
+    "created_at": "2025-06-14T05:33:23.805Z"
+  },
+  {
+    "id": 3,
+    "novel_id": 1,
+    "name": "Millfield Industries Employees",
+    "description": "Though not directly appearing in the story, the employees of Millfield Industries represent the human cost of whatever disaster befell the company. They were present \"three months ago, when people still believed in tomorrows\" but are now absent from the frozen building. Their fate remains unknown but ominous.",
+    "traits": "Absent, disappeared three months ago, victims of corporate disaster, represent lost humanity, their fate unknown but implied to be tragic",
+    "created_at": "2025-06-14T05:33:30.037Z"
+  }
+]

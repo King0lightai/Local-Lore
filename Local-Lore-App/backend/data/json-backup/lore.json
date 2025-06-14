@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "novel_id": 1,
+    "title": "The Millfield Disaster",
+    "content": "Three months ago, something catastrophic happened at Millfield Industries that caused the building to be abandoned. The disaster occurred in October and appears to be connected to the company \"reaching too far\" and \"digging too deep\" - finding \"things that were meant to stay buried.\" The building has been without power, heat, or human presence since then, left to freeze in the winter cold.",
+    "category": "Corporate History",
+    "created_at": "2025-06-14T05:34:57.577Z"
+  },
+  {
+    "id": 2,
+    "novel_id": 1,
+    "title": "The Wall Scratches",
+    "content": "Strange scratches appear throughout the building, carved deep into walls and doors. These marks evolve from simple gouges into elaborate patterns that resemble writing - a desperate language that hurts to look at directly. The scratches seem to pulse and demand attention, suggesting they may have supernatural significance or represent some form of communication or warning.",
+    "category": "Supernatural",
+    "created_at": "2025-06-14T05:35:05.334Z"
+  },
+  {
+    "id": 3,
+    "novel_id": 1,
+    "title": "The Supernatural Cold",
+    "content": "The building exists in a state of supernatural cold that goes beyond normal winter conditions. Ice crusts the windows \"like cataracts,\" pipes have burst creating cascades of frozen water, and the cold has \"teeth\" that bite into anyone who enters. The frost forms strange patterns, particularly around footprints, creating swirl patterns that resemble fingerprints pressed into clay.",
+    "category": "Environmental",
+    "created_at": "2025-06-14T05:35:16.193Z"
+  }
+]

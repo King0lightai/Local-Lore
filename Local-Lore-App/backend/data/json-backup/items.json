@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "novel_id": 1,
+    "name": "door handle",
+    "description": "aid and undone.</p><p>My hand found the door handle. It was so cold it burned, bu",
+    "properties": "",
+    "created_at": "2025-06-14T05:03:41.160Z"
+  },
+  {
+    "id": 2,
+    "novel_id": 1,
+    "name": "Flashlight",
+    "description": "The narrator's primary source of light in the dark, frozen building. The flashlight occasionally flickers at crucial moments, and its beam can only penetrate so far into the supernatural darkness that seems to consume light.",
+    "properties": "Battery-powered, beam cuts through darkness, occasionally flickers, limited range against supernatural darkness",
+    "created_at": "2025-06-14T05:36:30.774Z"
+  },
+  {
+    "id": 3,
+    "novel_id": 1,
+    "name": "Millfield Industries Nameplate",
+    "description": "A desk nameplate in the reception area that once read \"Millfield Industries\" in what might have been gold letters. Now the letters are \"the color of old blood, oxidized and forgotten\" - a symbol of the company's fall from prosperity to ruin.",
+    "properties": "Tarnished metal, blood-colored letters, symbolic of corporate decay, located on reception desk",
+    "created_at": "2025-06-14T05:36:36.196Z"
+  },
+  {
+    "id": 4,
+    "novel_id": 1,
+    "name": "October Calendar",
+    "description": "A calendar hanging askew behind the reception desk, frozen in time showing October - three months ago when the disaster occurred. It represents the moment when time stopped for Millfield Industries and \"when people still believed in tomorrows.\"",
+    "properties": "Stuck on October, hanging askew, symbolic of frozen time, represents the moment disaster struck",
+    "created_at": "2025-06-14T05:36:41.284Z"
+  },
+  {
+    "id": 5,
+    "novel_id": 1,
+    "name": "The Marked Door",
+    "description": "A special door on the seventh floor covered in elaborate scratched symbols that are more deliberate and purposeful than the random scratches elsewhere. This door remained closed while others hung open, and the symbols may serve as either a warning or invitation. The door opens by itself at the end of Chapter 2.",
+    "properties": "Covered in purposeful scratched symbols, remains closed unlike other doors, opens by itself, may be entrance to something significant",
+    "created_at": "2025-06-14T05:36:47.059Z"
+  }
+]
