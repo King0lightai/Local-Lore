@@ -27,7 +27,9 @@
       "Bash(find:*)",
       "Bash(/usr/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg -n \"setShowOutline|Story Outline\" /mnt/c/Users/zeepe/OneDrive/Desktop/Local-Lore/Local-Lore-App/frontend/src/components/WritingInterface.jsx)",
       "Bash(convert:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(cat:*)",
+      "Bash(git config:*)"
     ],
     "deny": []
   }
