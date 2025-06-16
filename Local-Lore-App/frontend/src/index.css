@@ -11,11 +11,13 @@
   
   body {
     @apply bg-writer-bg text-writer-text font-sans antialiased;
+    @apply dark:bg-dark-bg dark:text-dark-text;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply text-writer-heading font-semibold;
+    @apply dark:text-dark-heading;
   }
   
   /* Scrollbar styling */
@@ -24,53 +26,82 @@
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-writer-bg;
+    @apply bg-writer-bg dark:bg-dark-bg;
   }
   
   ::-webkit-scrollbar-thumb {
     @apply bg-writer-subtle rounded-full;
+    @apply dark:bg-dark-subtle;
   }
   
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-writer-text/30;
+    @apply dark:bg-dark-text/30;
   }
   
   /* Selection styling */
   ::selection {
     @apply bg-writer-accent/20 text-writer-heading;
+    @apply dark:bg-dark-accent/20 dark:text-dark-heading;
   }
   
   /* Focus ring styling */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg;
+    @apply dark:focus:ring-dark-accent/50 dark:focus:ring-offset-dark-bg;
   }
 }
 
 @layer components {
+  /* TipTap Editor Styles */
+  .ProseMirror {
+    @apply text-writer-text;
+    @apply dark:text-dark-text;
+  }
+  
+  .ProseMirror h1,
+  .ProseMirror h2,
+  .ProseMirror h3,
+  .ProseMirror h4,
+  .ProseMirror h5,
+  .ProseMirror h6 {
+    @apply text-writer-heading;
+    @apply dark:text-dark-heading;
+  }
+  
   /* Button Components */
   .btn-primary {
-    @apply px-4 py-2 bg-writer-accent text-white rounded-lg hover:bg-writer-accent/90 
+    @apply px-4 py-2 bg-writer-accent text-black rounded-lg hover:bg-writer-accent/90 
            focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
-           transition-all duration-200 font-medium text-sm;
+           transition-all duration-200 font-medium text-sm flex items-center whitespace-nowrap;
+    @apply dark:bg-dark-accent dark:text-black dark:hover:bg-dark-accent/80 
+           dark:focus:ring-dark-accent/50 dark:focus:ring-offset-dark-bg;
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-writer-surface border border-writer-border text-writer-text rounded-lg 
+    @apply px-4 py-2 bg-writer-surface border border-writer-border text-writer-heading rounded-lg 
            hover:bg-writer-muted hover:border-writer-subtle
            focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
            transition-all duration-200 font-medium text-sm;
+    @apply dark:bg-dark-surface dark:border-dark-border dark:text-dark-heading 
+           dark:hover:bg-dark-muted dark:hover:border-dark-subtle
+           dark:focus:ring-dark-accent/50 dark:focus:ring-offset-dark-bg;
   }
   
   .btn-ghost {
-    @apply px-3 py-2 text-writer-text rounded-lg hover:bg-writer-muted
+    @apply px-3 py-2 text-writer-heading rounded-lg hover:bg-writer-muted
            focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
-           transition-all duration-200 font-medium text-sm;
+           transition-all duration-200 font-medium text-sm flex items-center whitespace-nowrap;
+    @apply dark:text-dark-heading dark:hover:bg-dark-muted
+           dark:focus:ring-dark-accent/50 dark:focus:ring-offset-dark-bg;
   }
   
   .btn-icon {
-    @apply p-2 text-writer-subtle hover:text-writer-text hover:bg-writer-muted rounded-lg
+    @apply p-2 text-writer-text hover:text-writer-heading hover:bg-writer-muted rounded-lg
            focus:outline-none focus:ring-2 focus:ring-writer-accent/50 focus:ring-offset-2 focus:ring-offset-writer-bg
            transition-all duration-200;
+    @apply dark:text-dark-text dark:hover:text-dark-heading dark:hover:bg-dark-muted
+           dark:focus:ring-dark-accent/50 dark:focus:ring-offset-dark-bg;
   }
   
   /* Input Components */
@@ -78,21 +109,29 @@
     @apply w-full px-3 py-2 bg-writer-surface border border-writer-border rounded-lg text-writer-text
            placeholder:text-writer-subtle focus:outline-none focus:ring-2 focus:ring-writer-accent/50 
            focus:border-writer-accent transition-all duration-200;
+    @apply dark:bg-dark-surface dark:border-dark-border dark:text-dark-text
+           dark:placeholder:text-dark-subtle dark:focus:ring-dark-accent/50 
+           dark:focus:border-dark-accent;
   }
   
   .textarea-primary {
     @apply w-full px-3 py-2 bg-writer-surface border border-writer-border rounded-lg text-writer-text
            placeholder:text-writer-subtle focus:outline-none focus:ring-2 focus:ring-writer-accent/50 
            focus:border-writer-accent transition-all duration-200 resize-none;
+    @apply dark:bg-dark-surface dark:border-dark-border dark:text-dark-text
+           dark:placeholder:text-dark-subtle dark:focus:ring-dark-accent/50 
+           dark:focus:border-dark-accent;
   }
   
   /* Card Components */
   .card {
     @apply bg-writer-surface border border-writer-border rounded-xl shadow-soft;
+    @apply dark:bg-dark-surface dark:border-dark-border dark:shadow-none;
   }
   
   .card-header {
     @apply p-4 border-b border-writer-border;
+    @apply dark:border-dark-border;
   }
   
   .card-content {
@@ -101,51 +140,61 @@
   
   /* Sidebar Components */
   .sidebar {
-    @apply bg-writer-surface border-r border-writer-border;
+    @apply bg-writer-muted;
+    @apply dark:bg-dark-muted;
   }
   
   .sidebar-item {
-    @apply flex items-center px-3 py-2 text-writer-text hover:bg-writer-muted rounded-lg
+    @apply flex items-center px-3 py-2 text-writer-heading hover:bg-writer-surface rounded-lg
            transition-all duration-200 cursor-pointer;
+    @apply dark:text-dark-heading dark:hover:bg-dark-surface;
   }
   
   .sidebar-item.active {
-    @apply bg-writer-accent/10 text-writer-accent border-r-2 border-writer-accent;
+    @apply bg-writer-surface text-writer-heading border border-writer-accent;
+    @apply dark:bg-dark-surface dark:text-dark-heading dark:border-dark-accent;
   }
   
   /* Modal Components */
   .modal-overlay {
-    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50;
+    @apply fixed inset-0 z-50;
   }
   
   .modal-content {
     @apply bg-writer-surface border border-writer-border rounded-2xl shadow-hard max-h-[90vh] overflow-hidden;
+    @apply dark:bg-dark-surface dark:border-dark-border dark:shadow-none;
   }
   
   /* Toast Components */
   .toast {
     @apply px-4 py-3 rounded-lg shadow-medium border backdrop-blur-sm;
+    @apply dark:shadow-none;
   }
   
   .toast.success {
     @apply bg-writer-success/10 border-writer-success/20 text-writer-success;
+    @apply dark:bg-dark-success/10 dark:border-dark-success/20 dark:text-dark-success;
   }
   
   .toast.error {
     @apply bg-writer-error/10 border-writer-error/20 text-writer-error;
+    @apply dark:bg-dark-error/10 dark:border-dark-error/20 dark:text-dark-error;
   }
   
   .toast.warning {
     @apply bg-writer-warning/10 border-writer-warning/20 text-writer-warning;
+    @apply dark:bg-dark-warning/10 dark:border-dark-warning/20 dark:text-dark-warning;
   }
   
   .toast.info {
     @apply bg-writer-info/10 border-writer-info/20 text-writer-info;
+    @apply dark:bg-dark-info/10 dark:border-dark-info/20 dark:text-dark-info;
   }
   
   /* Editor Styles */
   .editor-content {
-    @apply font-serif text-lg leading-relaxed text-gray-800;
+    @apply font-serif text-lg leading-relaxed text-writer-text;
+    @apply dark:text-dark-text;
     font-size: 1.125rem;
     line-height: 1.7;
   }
@@ -155,19 +204,23 @@
   }
   
   .editor-content h1 {
-    @apply text-3xl font-bold mb-8 mt-12 text-gray-900;
+    @apply text-3xl font-bold mb-8 mt-12 text-writer-heading;
+    @apply dark:text-dark-heading;
   }
   
   .editor-content h2 {
-    @apply text-2xl font-semibold mb-6 mt-10 text-gray-900;
+    @apply text-2xl font-semibold mb-6 mt-10 text-writer-heading;
+    @apply dark:text-dark-heading;
   }
   
   .editor-content h3 {
-    @apply text-xl font-semibold mb-4 mt-8 text-gray-900;
+    @apply text-xl font-semibold mb-4 mt-8 text-writer-heading;
+    @apply dark:text-dark-heading;
   }
   
   .editor-content blockquote {
     @apply border-l-4 border-writer-accent/30 pl-4 italic text-writer-subtle;
+    @apply dark:border-dark-accent/30 dark:text-dark-subtle;
   }
   
   .editor-content ul, .editor-content ol {
@@ -201,15 +254,18 @@
   
   .outline-section {
     @apply border-l-2 border-transparent hover:border-writer-accent/30 transition-all duration-200;
+    @apply dark:hover:border-dark-accent/30;
   }
   
   .outline-section.active {
     @apply border-writer-accent bg-writer-accent/5;
+    @apply dark:border-dark-accent dark:bg-dark-accent/5;
   }
   
   /* Tab Navigation */
   .tab-nav {
     @apply flex space-x-1 bg-writer-muted p-1 rounded-lg;
+    @apply dark:bg-dark-muted;
   }
   
   .tab-nav button {
@@ -217,11 +273,13 @@
   }
   
   .tab-nav button.active {
-    @apply bg-writer-surface text-writer-heading shadow-soft;
+    @apply bg-writer-accent text-black shadow-soft;
+    @apply dark:bg-dark-accent dark:text-black dark:shadow-none;
   }
   
   .tab-nav button:not(.active) {
-    @apply text-writer-subtle hover:text-writer-text hover:bg-writer-surface/50;
+    @apply text-writer-heading hover:text-writer-heading hover:bg-writer-surface/50;
+    @apply dark:text-dark-heading dark:hover:text-dark-heading dark:hover:bg-dark-surface/50;
   }
   
   /* Animation Classes */
@@ -239,5 +297,23 @@
   
   .scale-in {
     @apply animate-scale-in;
+  }
+  
+  /* Drag and Drop Styles */
+  .cursor-grab {
+    cursor: grab;
+  }
+  
+  .cursor-grabbing {
+    cursor: grabbing;
+  }
+  
+  .drag-over {
+    @apply border-t-2 border-t-writer-accent;
+    @apply dark:border-t-dark-accent;
+  }
+  
+  .dragging {
+    @apply opacity-50;
   }
 }

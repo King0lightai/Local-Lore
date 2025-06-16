@@ -264,7 +264,7 @@ function AIAssistant({ selectedText, chapter, storyElements, onResult }) {
                             <button
                               onClick={() => handlePromptAction(key)}
                               disabled={isProcessing}
-                              className="btn-primary disabled:opacity-50"
+                              className="px-3 py-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white rounded-md font-medium shadow-md transition-all duration-200 disabled:opacity-50"
                             >
                               {isProcessing ? 'Processing...' : 'Apply'}
                             </button>

@@ -1,103 +1,155 @@
-# Local Lore - AI-Powered Novel Writing App
+# Local Lore - AI-Powered Novel Writing Suite
 
-A comprehensive, self-hosted novel writing application with AI assistance that integrates with Claude Desktop. Local Lore helps authors organize their writing process, track story elements, and leverage AI for creative assistance—all while keeping your data private and local.
+<div align="center">
+  <img src="Logo.png" alt="Local Lore Logo" width="200"/>
+  <h3><em>"It's like Magic"</em></h3>
+</div>
 
-## ✨ Features
+A comprehensive, self-hosted novel writing application with AI assistance that integrates seamlessly with Claude Desktop. Local Lore helps authors organize their writing process, track story elements, and leverage AI for creative assistance—all while keeping your data private and local.
 
-### Writing & Organization
-- 📝 Distraction-free writing interface
-- 🗂️ Hierarchical project structure with novels, chapters, and scenes
-- 📑 Rich text editing with formatting options
-- 🔍 Full-text search across all your writing
-- 🏷️ Tagging system for easy categorization
-- 📊 Word count and writing statistics
+## ✨ Key Features
 
-### AI-Powered Assistance
-- 🤖 Integrated Claude AI for writing suggestions
-- ✍️ AI-powered editing and rewriting
-- 📖 Story continuation and expansion
-- 🔄 Multiple AI interaction modes (Edit, Review, Continue, Replace)
-- 🎭 Character and plot consistency checking
+### 📝 **Professional Writing Environment**
+- **Rich Text Editor**: TipTap-powered editor with professional formatting tools
+- **Focus Mode**: Distraction-free writing with customizable interface
+- **Auto-save**: Intelligent auto-saving with debounced updates
+- **Real-time Statistics**: Live word count, character count, and writing progress
+- **Version History**: Complete chapter version control with restoration capabilities
 
-### Story Management
-- 📚 Automatic tracking of story elements:
-  - 👥 Characters with detailed profiles
-  - 🏰 Locations and settings
-  - 📅 Events and plot points
-  - 📜 Lore and worldbuilding
-  - 🧩 Items and artifacts
-- 🗺️ Visual outline and storyboard view
-- 🔗 Link story elements to specific scenes
+### 🏗️ **Advanced Story Organization**
+- **Hierarchical Outlines**: Multi-level story structure (Acts → Chapters → Scenes → Beats)
+- **Chapter Management**: Create, reorder, and manage chapters with drag-and-drop
+- **Bi-directional Sync**: Automatic synchronization between outline and chapter views
+- **Chapter Guide**: Read-only contextual guide showing scene and beat structure
 
-### Productivity
-- ⏱️ Writing goals and progress tracking
-- 📅 Session history and statistics
-- 💾 Auto-save and version history
-- 📱 Responsive design for all devices
-- 🎨 Customizable interface themes
-- 🔌 Plugin system for extensibility
+### 🎭 **Comprehensive Story Element Tracking**
+- **Characters**: Detailed character profiles with traits and descriptions
+- **Places**: Location registry with rich descriptions
+- **Events**: Plot events linked to specific chapters
+- **Lore**: Categorized world-building information
+- **Items**: Story objects and artifacts
+- **Smart Organization**: Tabbed interface with search and categorization
 
-## 🚀 Getting Started
+### 🤖 **Advanced AI Integration**
+- **Claude Desktop Integration**: Direct MCP (Model Context Protocol) server connection
+- **Custom AI Prompts**: User-defined writing assistance templates
+- **Context-Aware AI**: Automatically provides relevant story elements as context
+- **Multiple AI Actions**: Edit, review, continue, and replace text functionality
+- **Story Analysis**: Generate outlines, summaries, and comprehensive story analysis
+
+### 🔍 **Powerful Search & Navigation**
+- **Global Search**: Search across all chapters and story elements
+- **Text Highlighting**: In-editor search result highlighting
+- **Quick Navigation**: Jump between chapters, characters, and places
+- **Cross-references**: Navigate between related story elements
+
+### 📊 **Export & Data Management**
+- **Multiple Export Formats**: JSON, Markdown, HTML, and plain text
+- **Complete Data Export**: Export all story elements with metadata
+- **Visual Notes System**: Draggable, resizable notes with color coding
+- **Data Integrity**: SQLite database with proper relationship management
+
+## 🚀 Installation & Setup
 
 ### Prerequisites
-- Node.js 16+ and npm
-- Claude Desktop application (for AI features)
-- Modern web browser (Chrome, Firefox, Edge, or Safari)
+- **Node.js** 18+ and npm 9+
+- **Claude Desktop** (for AI features)
+- **Git** (for cloning)
 
-### 1. Installation
+### Quick Start
 
-1. Clone the repository:
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/local-lore.git
-   cd local-lore/Local-Lore-App
+   git clone https://github.com/yourusername/Local-Lore.git
+   cd Local-Lore
    ```
 
-### 2. Backend Setup
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-The backend will run on http://localhost:3001
-
-### 3. Frontend Setup
-
-In a new terminal window:
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-The application will automatically open in your default browser at http://localhost:3000
-
-### 4. AI Integration (Optional but Recommended)
-
-#### Claude Desktop Integration
-
-1. Install the MCP server:
+2. **Install dependencies for all components:**
    ```bash
-   cd mcp-server
+   # Backend
+   cd Local-Lore-App/backend
+   npm install
+
+   # Frontend
+   cd ../frontend
+   npm install
+
+   # MCP Server
+   cd ../mcp-server
+   npm install
+   cd ../../
+   ```
+
+3. **Start the application:**
+   
+   **Option A: Use batch files (Windows):**
+   ```batch
+   # Start backend
+   start-backend.bat
+   
+   # Start frontend (in new terminal)
+   Start-frontend.bat
+   
+   # Start MCP server (in new terminal)
+   "Start MCP.bat"
+   ```
+
+   **Option B: Manual startup:**
+   ```bash
+   # Terminal 1: Backend
+   cd Local-Lore-App/backend
+   npm start
+
+   # Terminal 2: Frontend
+   cd Local-Lore-App/frontend
+   npm start
+
+   # Terminal 3: MCP Server
+   cd Local-Lore-App/mcp-server
+   npm start
+   ```
+
+4. **Access the application at `http://localhost:3000`**
+
+### Desktop Application (Electron)
+
+For a native desktop experience:
+
+```bash
+cd Local-Lore-App/frontend
+
+# Development mode
+npm run electron-dev
+
+# Build for production
+npm run electron-dist
+```
+
+## 🤖 AI Integration Setup
+
+### Claude Desktop MCP Integration
+
+1. **Install and configure the MCP server:**
+   ```bash
+   cd Local-Lore-App/mcp-server
    npm install
    ```
 
-2. **Windows Setup:**
+2. **Configure Claude Desktop:**
+   
+   **Windows:**
    - Copy the contents of `claude-desktop-config.json`
    - Paste into `%APPDATA%\Claude\claude_desktop_config.json`
    - Create the file if it doesn't exist
-   - Restart Claude Desktop
 
-3. **Mac/Linux Setup:**
-   Create or edit `~/.config/claude/claude_desktop_config.json`:
-   ```json
+   **Mac/Linux:**
+   ```bash
+   # Create or edit ~/.config/claude/claude_desktop_config.json
    {
      "mcpServers": {
        "local-lore": {
          "command": "node",
-         "args": ["/full/path/to/local-lore/mcp-server/server.js"],
+         "args": ["/full/path/to/Local-Lore/Local-Lore-App/mcp-server/server.js"],
          "env": {
            "LOCAL_LORE_API": "http://localhost:3001/api"
          }
@@ -106,151 +158,240 @@ The application will automatically open in your default browser at http://localh
    }
    ```
 
-4. **Chrome Extension (Alternative):**
-   - Open Chrome and go to `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked"
-   - Select the `frontend/public/scribber-extension` directory
+3. **Restart Claude Desktop** to activate the integration
+
+### Browser Extension (Alternative)
+
+For Claude Desktop web interface integration:
+
+1. Open Chrome and navigate to `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked"
+4. Select the `Local-Lore-App/frontend/public/scribber-extension` directory
 
 ## 📖 User Guide
 
 ### Creating Your First Novel
-1. Click "New Novel" from the dashboard
-2. Enter your novel's title, genre, and description
-3. Click "Create" to initialize your project
 
-### Writing Interface
-- The main editor provides a clean, distraction-free writing environment
-- Use the left sidebar to navigate between chapters and scenes
-- The right sidebar shows relevant story elements as you write
+1. **Start a New Project:**
+   - Click "New Novel" from the dashboard
+   - Enter title, description, genre, and POV
+   - Choose standalone or series format
+   - Click "Create" to initialize
 
-### Using AI Assistance
-1. Select text in your document
-2. Click the AI Assistant button in the toolbar
-3. Choose an action:
-   - **Edit**: Improve clarity and flow
-   - **Review**: Get feedback on writing quality
-   - **Continue**: Generate the next part of your story
-   - **Replace**: Rewrite with a different approach
+2. **Writing Interface:**
+   - **Left Sidebar**: Navigate chapters and story elements
+   - **Main Editor**: Rich text editing with formatting toolbar
+   - **Right Sidebar**: Chapter Guide (when enabled)
+   - **Bottom Status**: Word count and save status
 
-### Managing Story Elements
-- **Characters**: Track character details, relationships, and arcs
-- **Locations**: Document settings and environments
-- **Timeline**: Visualize your story's chronology
-- **Lore**: Build your world's history and rules
+### Story Organization
 
-### Outline View
-- Create a hierarchical outline of your novel
-- Drag and drop to reorganize scenes and chapters
-- Link outline items to specific story elements
-- View word count and progress for each section
+1. **Chapter Management:**
+   - Create new chapters from the sidebar
+   - Drag and drop to reorder chapters
+   - Use the outline view for hierarchical organization
+
+2. **Story Elements:**
+   - **Characters Tab**: Create and manage character profiles
+   - **Places Tab**: Document locations and settings
+   - **Events Tab**: Track plot events and timeline
+   - **Lore Tab**: Build your world's history and rules
+   - **Items Tab**: Catalog important objects
+
+3. **Outline System:**
+   - Access via the "Outline" view
+   - Create hierarchical story structure
+   - Generate outlines from existing chapters
+   - Sync automatically with chapter organization
+
+### AI-Powered Writing
+
+1. **Text Selection AI:**
+   - Select text in the editor
+   - Use AI Assistant for editing, reviewing, or continuing
+   - AI receives relevant story context automatically
+
+2. **Custom AI Prompts:**
+   - Create custom writing assistance prompts
+   - Use placeholders like `{{selectedText}}` and `{{character}}`
+   - Access from the AI Assistant panel
+
+3. **Story Analysis:**
+   - Generate comprehensive story outlines
+   - Create character summaries
+   - Analyze plot structure and pacing
 
 ### Version Control
-- View and restore previous versions of your work
-- Add notes to significant changes
-- Compare different versions side by side
 
-## 🤖 Advanced AI Integration
+1. **Automatic Versioning:**
+   - Versions saved automatically on significant changes
+   - Manual save creates explicit version points
 
-### MCP Server Features
-- Access your entire story context directly in Claude Desktop
-- Query character information, plot points, and world details
-- Generate content that stays consistent with your story
+2. **Version Management:**
+   - View version history in the sidebar
+   - Compare different versions
+   - Restore previous versions when needed
 
-### Custom AI Prompts
-1. Access the AI Prompts Manager from the settings menu
-2. Create new prompt templates or modify existing ones
-3. Use placeholders like `{{selectedText}}` and `{{character}}`
-4. Save your prompts for future use
+## 🏗️ Architecture
 
-### Chrome Extension Features
-- One-click prompt generation based on selected text
-- Quick access to common writing assistance tasks
-- Seamless integration with Claude's web interface
-
-## 🔧 Configuration
-
-### Environment Variables
-Create a `.env` file in the backend directory with:
+### Project Structure
 ```
+Local-Lore/
+├── Local-Lore-App/
+│   ├── backend/                    # Node.js/Express API server
+│   │   ├── data/                   # SQLite database and backups
+│   │   ├── server-improved.js      # Main server file
+│   │   ├── analyzer.js             # Text analysis utilities
+│   │   └── package.json            # Backend dependencies
+│   │
+│   ├── frontend/                   # React + Electron application
+│   │   ├── electron/               # Electron main process
+│   │   ├── public/                 # Static assets and browser extension
+│   │   ├── src/                    # React application source
+│   │   │   ├── components/         # Reusable UI components
+│   │   │   └── contexts/           # React context providers
+│   │   └── package.json            # Frontend dependencies
+│   │
+│   ├── mcp-server/                 # Claude Desktop MCP integration
+│   │   ├── server.js               # MCP server implementation
+│   │   └── package.json            # MCP server dependencies
+│   │
+│   └── claude-desktop-config.json  # Claude Desktop configuration
+│
+├── Logo.png                        # Application logo
+├── README.md                       # This file
+└── *.bat                          # Windows batch scripts for easy startup
+```
+
+### Technology Stack
+
+**Backend:**
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **Database**: SQLite with better-sqlite3
+- **Additional**: CORS, dotenv, markdown-it, html-to-text
+
+**Frontend:**
+- **Framework**: React 18 with Vite
+- **Router**: React Router DOM
+- **Editor**: TipTap (ProseMirror-based)
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **HTTP Client**: Axios
+
+**Desktop:**
+- **Platform**: Electron 28+
+- **Builder**: electron-builder
+- **Cross-platform**: Windows, macOS, Linux support
+
+**AI Integration:**
+- **Protocol**: Model Context Protocol (MCP)
+- **Provider**: Anthropic Claude
+- **SDK**: @modelcontextprotocol/sdk
+
+### Database Schema
+
+The application uses SQLite with the following core tables:
+
+- **novels**: Project metadata (title, description, genre, POV, series info)
+- **chapters**: Chapter content with order, word count, and timestamps
+- **chapter_versions**: Complete version history for all chapters
+- **characters**: Character profiles with traits and descriptions
+- **places**: Location information with descriptions
+- **events**: Plot events linked to specific chapters
+- **lore**: Categorized world-building information
+- **items**: Story objects and artifacts
+- **notes**: Visual sticky notes with position data
+- **ai_prompts**: Custom AI writing prompts
+- **outlines**: Story structure outlines
+- **outline_sections**: Hierarchical outline components
+
+## 🛠️ Development
+
+### Available Scripts
+
+**Backend (`Local-Lore-App/backend`):**
+- `npm start`: Start the production server
+- `npm run dev`: Start with nodemon (development)
+- `npm run migrate`: Migrate from JSON to SQLite
+- `npm run add-aiisms`: Add anti-AI writing guidelines
+
+**Frontend (`Local-Lore-App/frontend`):**
+- `npm start`: Start Vite development server
+- `npm run build`: Build for production
+- `npm run electron`: Run Electron app
+- `npm run electron-dev`: Run Electron in development mode
+- `npm run electron-dist`: Build desktop application
+
+**MCP Server (`Local-Lore-App/mcp-server`):**
+- `npm start`: Start the MCP server
+
+### Configuration
+
+**Environment Variables** (create `.env` in backend directory):
+```env
 PORT=3001
 NODE_ENV=development
-DATABASE_URL=./data/local-lore.db
+CLIENT_URL=http://localhost:3000
 ```
 
-### Customizing the Interface
-- Toggle between light and dark themes
-- Adjust font size and family
-- Customize the editor's appearance
-- Configure keyboard shortcuts
+**Customization Options:**
+- Theme switching (light/dark)
+- Editor font and size preferences
+- Sidebar width and layout
+- Auto-save intervals
 
-## 📚 Documentation
+## 🔧 Troubleshooting
 
-For detailed documentation, please refer to:
-- [AI Integration Guide](./CLAUDE-INTEGRATION-GUIDE.md)
+### Common Issues
 
-## 🛠️ Technology Stack
+1. **Port Conflicts:**
+   - Backend runs on port 3001
+   - Frontend runs on port 3000
+   - Ensure ports are available
 
-### Backend
-- **Runtime**: Node.js 16+
-- **Framework**: Express.js
-- **Database**: SQLite with Knex.js ORM
-- **API**: RESTful JSON API
-- **Authentication**: JWT
+2. **Database Issues:**
+   - Database file: `Local-Lore-App/backend/data/scribber.db`
+   - Backup available in `data/json-backup/`
 
-### Frontend
-- **Framework**: React 18
-- **State Management**: React Context API
-- **Rich Text Editor**: TipTap (ProseMirror)
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide Icons
-- **Charts**: Chart.js
+3. **AI Integration:**
+   - Ensure Claude Desktop is running
+   - Check MCP server configuration
+   - Verify file paths in configuration
 
-### AI Integration
-- **Protocol**: Model Context Protocol (MCP)
-- **AI Provider**: Anthropic Claude
-- **Extensions**: Chrome Extension API
+4. **Electron App:**
+   - Ensure backend is running before starting Electron
+   - Check console for backend connection errors
 
-## 🗄️ Database Schema
+### Performance Tips
 
-The application uses SQLite with the following main tables:
-
-### Core Tables
-- **novels**: Main story projects
-- **chapters**: Chapter content and metadata
-- **scenes**: Individual scenes within chapters
-- **versions**: Document version history
-
-### Story Elements
-- **characters**: Character profiles and traits
-- **locations**: Places and settings
-- **events**: Plot points and timeline events
-- **items**: Objects and artifacts
-- **lore_entries**: Worldbuilding elements
-
-### Supporting Tables
-- **tags**: Categorization system
-- **notes**: Author's notes and annotations
-- **ai_prompts**: Custom AI prompt templates
-- **sessions**: Writing session data
+- Use auto-save wisely (it's debounced for performance)
+- Close unused story element tabs
+- Export projects regularly for backup
+- Use version history judiciously
 
 ## 🤝 Contributing
 
-We welcome contributions!
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Inspired by tools like Scrivener, Novelcrafter, and Sudowrite
+- Inspired by professional writing tools like Scrivener and Novelcrafter
 - Built with the amazing open-source community
-- Special thanks to all our beta testers and contributors
+- Special thanks to Anthropic for Claude AI integration
+- Icons provided by Lucide React
 
 ---
 
-📝 **Note**: This is a self-hosted application. Your data never leaves your machine unless you choose to export or back it up.
-- **events**: Story events and timeline
-- **lore**: World-building information
-- **items**: Important objects in the story
+**🔒 Privacy Note**: Local Lore is a self-hosted application. Your writing data never leaves your machine unless you choose to export it. AI features communicate only with your local Claude Desktop installation.
+
+**✨ Happy Writing!** Create your next masterpiece with Local Lore's powerful combination of traditional writing tools and cutting-edge AI assistance.

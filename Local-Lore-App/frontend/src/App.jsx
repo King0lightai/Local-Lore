@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NovelList from './components/NovelList';
 import WritingInterface from './components/WritingInterface';
+import { ThemeProvider } from './contexts/ThemeContext';
 import axios from 'axios';
 
 function App() {
@@ -22,12 +23,14 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<NovelList novels={novels} onRefresh={fetchNovels} />} />
-        <Route path="/novel/:id" element={<WritingInterface />} />
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<NovelList novels={novels} onRefresh={fetchNovels} />} />
+          <Route path="/novel/:id" element={<WritingInterface />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 

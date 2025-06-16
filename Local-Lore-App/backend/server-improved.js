@@ -27,6 +27,29 @@ const db = new Database(dbPath);
 // Enable foreign keys
 db.pragma('foreign_keys = ON');
 
+// Database migration for notes position data
+const addNotesPositionColumns = () => {
+  try {
+    // Check if position columns already exist
+    const tableInfo = db.prepare("PRAGMA table_info(notes)").all();
+    const hasXColumn = tableInfo.some(col => col.name === 'x');
+    
+    if (!hasXColumn) {
+      console.log('Adding position columns to notes table...');
+      db.exec(`
+        ALTER TABLE notes ADD COLUMN x REAL DEFAULT 0;
+        ALTER TABLE notes ADD COLUMN y REAL DEFAULT 0;
+        ALTER TABLE notes ADD COLUMN width INTEGER DEFAULT 200;
+        ALTER TABLE notes ADD COLUMN height INTEGER DEFAULT 150;
+        ALTER TABLE notes ADD COLUMN color TEXT DEFAULT '#fef3c7';
+      `);
+      console.log('Notes table migration completed.');
+    }
+  } catch (error) {
+    console.log('Notes table migration not needed or already applied.');
+  }
+};
+
 // Initialize database schema
 db.exec(`
   CREATE TABLE IF NOT EXISTS novels (
@@ -116,9 +139,14 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     novel_id INTEGER NOT NULL,
-    title TEXT NOT NULL,
+    title TEXT,
     content TEXT,
     category TEXT,
+    x REAL DEFAULT 0,
+    y REAL DEFAULT 0,
+    width INTEGER DEFAULT 200,
+    height INTEGER DEFAULT 150,
+    color TEXT DEFAULT '#fef3c7',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE
@@ -188,6 +216,9 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_outline_sections_parent_id ON outline_sections(parent_id);
 `);
 
+// Run database migrations
+addNotesPositionColumns();
+
 // Prepare statements for better performance
 const statements = {
   // Novel queries
@@ -242,8 +273,8 @@ const statements = {
   // Notes queries
   getNotes: db.prepare('SELECT * FROM notes WHERE novel_id = ? ORDER BY updated_at DESC'),
   getNote: db.prepare('SELECT * FROM notes WHERE id = ?'),
-  createNote: db.prepare('INSERT INTO notes (novel_id, title, content, category) VALUES (?, ?, ?, ?)'),
-  updateNote: db.prepare('UPDATE notes SET title = ?, content = ?, category = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'),
+  createNote: db.prepare('INSERT INTO notes (novel_id, title, content, category, x, y, width, height, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'),
+  updateNote: db.prepare('UPDATE notes SET title = ?, content = ?, category = ?, x = ?, y = ?, width = ?, height = ?, color = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'),
   deleteNote: db.prepare('DELETE FROM notes WHERE id = ?'),
   
   // AI Prompts queries
@@ -414,6 +445,39 @@ app.delete('/api/chapters/:id', asyncHandler(async (req, res) => {
   statements.deleteChapter.run(req.params.id);
   statements.updateNovel.run(chapter.novel_id);
   res.json({ success: true });
+}));
+
+// Chapter reorder endpoint
+app.put('/api/novels/:id/chapters/reorder', asyncHandler(async (req, res) => {
+  const { chapters } = req.body;
+  
+  if (!Array.isArray(chapters)) {
+    return res.status(400).json({ error: 'Chapters must be an array' });
+  }
+  
+  // Validate that all chapters have id and order_index
+  for (const chapter of chapters) {
+    if (!chapter.id || typeof chapter.order_index !== 'number') {
+      return res.status(400).json({ error: 'Each chapter must have id and order_index' });
+    }
+  }
+  
+  // Use transaction to update all chapters atomically
+  const updateChapterOrder = db.prepare('UPDATE chapters SET order_index = ? WHERE id = ? AND novel_id = ?');
+  const updateTransaction = db.transaction((chapters, novelId) => {
+    for (const chapter of chapters) {
+      updateChapterOrder.run(chapter.order_index, chapter.id, novelId);
+    }
+  });
+  
+  try {
+    updateTransaction(chapters, req.params.id);
+    statements.updateNovel.run(req.params.id); // Update novel timestamp
+    res.json({ success: true, message: 'Chapter order updated successfully' });
+  } catch (error) {
+    console.error('Error updating chapter order:', error);
+    res.status(500).json({ error: 'Failed to update chapter order' });
+  }
 }));
 
 // Chapter analysis
@@ -667,25 +731,110 @@ app.get('/api/novels/:id/notes', asyncHandler(async (req, res) => {
 }));
 
 app.post('/api/novels/:id/notes', validateInput({
-  title: { required: true, maxLength: 300 }
+  content: { required: true, maxLength: 5000 },
+  title: { maxLength: 300 }
 }), asyncHandler(async (req, res) => {
-  const { title, content = '', category = '' } = req.body;
-  const result = statements.createNote.run(req.params.id, title, content, category);
-  res.json({ id: result.lastInsertRowid, novel_id: req.params.id, title, content, category });
+  const { 
+    title = '', 
+    content, 
+    category = '', 
+    x = 0, 
+    y = 0, 
+    width = 200, 
+    height = 150, 
+    color = '#fef3c7' 
+  } = req.body;
+  
+  const result = statements.createNote.run(
+    req.params.id, 
+    title, 
+    content, 
+    category, 
+    x, 
+    y, 
+    width, 
+    height, 
+    color
+  );
+  
+  const newNote = {
+    id: result.lastInsertRowid,
+    novel_id: parseInt(req.params.id),
+    title,
+    content,
+    category,
+    x,
+    y,
+    width,
+    height,
+    color,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+  
+  res.status(201).json(newNote);
 }));
 
 app.put('/api/notes/:id', validateInput({
-  title: { required: true, maxLength: 300 }
+  content: { maxLength: 5000 },
+  title: { maxLength: 300 }
 }), asyncHandler(async (req, res) => {
-  const { title, content = '', category = '' } = req.body;
-  const result = statements.updateNote.run(title, content, category, req.params.id);
-  if (result.changes === 0) return res.status(404).json({ error: 'Note not found' });
-  res.json({ success: true });
+  const noteId = parseInt(req.params.id);
+  const existingNote = statements.getNote.get(noteId);
+  
+  if (!existingNote) {
+    return res.status(404).json({ error: 'Note not found' });
+  }
+  
+  // Merge existing note data with provided updates
+  const {
+    title = existingNote.title,
+    content = existingNote.content,
+    category = existingNote.category,
+    x = existingNote.x,
+    y = existingNote.y,
+    width = existingNote.width,
+    height = existingNote.height,
+    color = existingNote.color
+  } = req.body;
+  
+  const result = statements.updateNote.run(
+    title,
+    content,
+    category,
+    x,
+    y,
+    width,
+    height,
+    color,
+    noteId
+  );
+  
+  if (result.changes === 0) {
+    return res.status(404).json({ error: 'Note not found' });
+  }
+  
+  const updatedNote = {
+    ...existingNote,
+    title,
+    content,
+    category,
+    x,
+    y,
+    width,
+    height,
+    color,
+    updated_at: new Date().toISOString()
+  };
+  
+  res.json(updatedNote);
 }));
 
 app.delete('/api/notes/:id', asyncHandler(async (req, res) => {
   const result = statements.deleteNote.run(req.params.id);
-  if (result.changes === 0) return res.status(404).json({ error: 'Note not found' });
+  if (result.changes === 0) {
+    return res.status(404).json({ error: 'Note not found' });
+  }
   res.json({ success: true });
 }));
 
@@ -857,7 +1006,9 @@ app.delete('/api/outlines/:id', asyncHandler(async (req, res) => {
 // Get sections for an outline
 app.get('/api/outlines/:id/sections', asyncHandler(async (req, res) => {
   const outlineId = parseInt(req.params.id);
+  console.log('🔍 Backend: Fetching sections for outline ID:', outlineId);
   const sections = statements.getOutlineSections.all(outlineId);
+  console.log('📝 Backend: Found', sections.length, 'sections:', sections.map(s => ({id: s.id, title: s.title, outline_id: s.outline_id})));
   res.json(sections);
 }));
 
@@ -894,11 +1045,14 @@ app.post('/api/outlines/:id/sections', validateInput({
     chapter_id = null 
   } = req.body;
   
+  console.log('📤 Backend: Creating section for outline', outlineId, ':', { title, level, parent_id, order_index });
+  
   const result = statements.createOutlineSection.run(
     outlineId, title, description, content, order_index, parent_id, level, chapter_id
   );
   
   const section = statements.getOutlineSection.get(result.lastInsertRowid);
+  console.log('✅ Backend: Section created with ID:', section.id, 'for outline:', section.outline_id);
   res.status(201).json(section);
 }));
 

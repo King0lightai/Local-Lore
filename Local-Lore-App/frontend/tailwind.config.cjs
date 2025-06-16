@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -22,6 +23,19 @@ module.exports = {
           900: '#0f172a',
           950: '#020617'
         },
+        // Faded mint green accent colors
+        'mint': {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
+        },
         // Balanced writing-focused color scheme
         'writer': {
           bg: '#fafafa',       // Light warm background
@@ -31,7 +45,24 @@ module.exports = {
           subtle: '#6b7280',   // Medium gray for subtle text
           text: '#1f2937',     // Dark gray for main text
           heading: '#111827',  // Near black for headings
-          accent: '#6366f1',   // Indigo accent
+          accent: '#86efac',   // Faded mint green accent (mint-300)
+          success: '#10b981',  // Success green
+          warning: '#f59e0b',  // Warning amber
+          error: '#ef4444',    // Error red
+          info: '#3b82f6',     // Info blue
+        },
+        // Dark mode colors
+        'dark': {
+          bg: '#0f0f0f',       // Very dark charcoal background
+          surface: '#2a2a2a',  // Charcoal grey surface for editor
+          sidebar: '#1a1a1a',  // Darker background for sidebar
+          panel: '#202020',    // Slightly lighter for sidebar sections
+          border: '#404040',   // Medium gray borders
+          muted: '#1f1f1f',    // Dark muted backgrounds for sidebar
+          subtle: '#a1a1aa',   // Light gray for subtle text
+          text: '#e4e4e7',     // Light gray for main text
+          heading: '#f4f4f5',  // Very light gray for headings
+          accent: '#86efac',   // Faded mint green accent (mint-300)
           success: '#10b981',  // Success green
           warning: '#f59e0b',  // Warning amber
           error: '#ef4444',    // Error red
@@ -40,7 +71,7 @@ module.exports = {
         // Legacy colors for gradual migration
         'paper': '#faf8f3',
         'ink': '#2c2c2c',
-        'accent': '#6366f1'
+        'accent': '#86efac'
       },
       fontFamily: {
         'serif': ['Charter', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],

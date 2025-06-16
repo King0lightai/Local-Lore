@@ -35,15 +35,15 @@ function ResizableSidebar({ children, initialWidth = 256, minWidth = 200, maxWid
     <div className="flex h-full">
       <div
         ref={sidebarRef}
-        className="bg-gray-50 border-r border-gray-200 flex flex-col relative"
+        className="flex flex-col relative"
         style={{ width: `${width}px` }}
       >
         {children}
         
         {/* Resize handle */}
         <div
-          className={`absolute top-0 right-0 w-1 h-full cursor-ew-resize hover:bg-indigo-300 transition-colors ${
-            isResizing ? 'bg-indigo-400' : 'bg-transparent hover:bg-gray-300'
+          className={`absolute top-0 right-0 w-1 h-full cursor-ew-resize hover:bg-writer-accent dark:hover:bg-dark-accent transition-colors ${
+            isResizing ? 'bg-writer-accent dark:bg-dark-accent' : 'bg-transparent hover:bg-writer-muted dark:hover:bg-dark-muted'
           }`}
           onMouseDown={startResizing}
           title="Drag to resize sidebar"

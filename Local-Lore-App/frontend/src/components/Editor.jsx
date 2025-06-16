@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Save, AlertCircle, CheckCircle, Loader, Undo, Redo, Bold, Italic, List, ListOrdered, Clock, Focus, Maximize2 } from 'lucide-react';
+import { Save, AlertCircle, CheckCircle, Loader, Undo, Redo, Bold, Italic, List, ListOrdered, Clock, Focus, Maximize2, Trash2, Layout } from 'lucide-react';
 import { useToast } from './Toast';
 import VersionHistory from './VersionHistory';
 import AIPromptsManager from './AIPromptsManager';
+import { ConfirmModal } from './Modal';
 
-function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, chapters, focusMode, onFocusModeChange }) {
+function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, chapters, focusMode, onFocusModeChange, onDeleteChapter, showGuide, onToggleGuide }) {
   const { showToast } = useToast();
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved', 'saving', 'error'
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [selectedText, setSelectedText] = useState('');
   const [chapterTitle, setChapterTitle] = useState(chapter.title);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const saveTimeoutRef = useRef(null);
   const lastSavedContent = useRef(chapter.content || '');
 
@@ -39,7 +41,7 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
     content: chapter.content || '',
     editorProps: {
       attributes: {
-        class: 'prose prose-gray max-w-none focus:outline-none min-h-[500px] px-8 py-6',
+        class: 'prose prose-gray dark:prose-invert max-w-none focus:outline-none min-h-[500px] px-8 py-6 bg-writer-surface dark:bg-dark-surface text-writer-text dark:text-dark-text',
         style: 'font-family: Georgia, Cambria, serif; line-height: 1.8; font-size: 16px;'
       }
     },
@@ -196,6 +198,13 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
     window.location.reload();
   };
 
+  const handleDeleteChapter = () => {
+    if (onDeleteChapter) {
+      onDeleteChapter(chapter.id);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   // Handle text selection for AI Assistant
   useEffect(() => {
     if (!editor) return;
@@ -276,16 +285,19 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
   // Focus Mode Layout
   if (focusMode) {
     return (
-      <div className="h-full bg-white relative">
+      <div className="h-full bg-writer-surface dark:bg-dark-surface relative">
         <style dangerouslySetInnerHTML={{
           __html: `
             .focus-mode .ProseMirror {
               font-size: 18px !important;
               line-height: 1.8 !important;
               font-family: Georgia, Cambria, serif !important;
-              color: #374151 !important;
+              color: rgb(31, 41, 55) !important;
               padding: 0 !important;
               max-width: none !important;
+            }
+            .dark .focus-mode .ProseMirror {
+              color: rgb(228, 228, 231) !important;
             }
             .focus-mode .ProseMirror:focus {
               outline: none !important;
@@ -299,6 +311,11 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
               margin-top: 2rem !important;
               margin-bottom: 1rem !important;
               color: #1f2937 !important;
+            }
+            .dark .focus-mode .ProseMirror h1,
+            .dark .focus-mode .ProseMirror h2,
+            .dark .focus-mode .ProseMirror h3 {
+              color: #f4f4f5 !important;
             }
           `
         }} />
@@ -328,7 +345,7 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
                   editor?.commands.focus();
                 }
               }}
-              className="text-4xl font-bold text-gray-900 mb-12 border-none focus:outline-none bg-transparent w-full placeholder-gray-400"
+              className="text-4xl font-bold text-writer-heading dark:text-dark-heading mb-12 border-none focus:outline-none bg-transparent w-full placeholder:text-writer-subtle dark:placeholder:text-dark-subtle"
               placeholder="Chapter Title"
             />
             
@@ -350,7 +367,7 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
 
   // Normal Mode Layout
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-writer-surface dark:bg-dark-surface">
       <style dangerouslySetInnerHTML={{
         __html: `
           .ProseMirror ul {
@@ -375,51 +392,70 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
         `
       }} />
       {/* Header */}
-      <div className="border-b border-gray-200 px-8 py-4">
+      <div className="border-b border-writer-border dark:border-dark-border px-8 py-4 bg-writer-muted dark:bg-dark-muted">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-900">{novel?.title || 'Novel'}</h2>
+          <input 
+            type="text"
+            value={chapterTitle}
+            onChange={(e) => setChapterTitle(e.target.value)}
+            onBlur={(e) => handleTitleChange(e.target.value.trim())}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.target.blur();
+                editor?.commands.focus();
+              }
+            }}
+            className="text-2xl font-semibold text-writer-heading dark:text-dark-heading bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-writer-accent dark:focus:ring-dark-accent rounded px-2 py-1 min-w-0 flex-shrink"
+            placeholder="Chapter Title"
+          />
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-500">
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+              title="Delete Chapter"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <span className="text-sm text-writer-subtle dark:text-dark-subtle">
               {getTotalWordCount().toLocaleString()} words total
             </span>
             <SaveIndicator />
             <button
               onClick={() => setShowVersionHistory(true)}
-              className="flex items-center px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded"
+              className="p-2 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-surface dark:hover:bg-dark-surface rounded-lg transition-colors"
               title="Version History"
             >
-              <Clock className="w-4 h-4 mr-1" />
-              History
+              <Clock className="w-4 h-4" />
             </button>
             <button
               onClick={() => onFocusModeChange(true)}
-              className="flex items-center px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded"
+              className="p-2 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-surface dark:hover:bg-dark-surface rounded-lg transition-colors"
               title="Focus Mode (Press Esc to exit)"
             >
-              <Focus className="w-4 h-4 mr-1" />
-              Focus
+              <Focus className="w-4 h-4" />
             </button>
             <button
               onClick={handleManualSave}
               disabled={saveStatus === 'saving'}
-              className="flex items-center px-3 py-1.5 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white rounded-lg font-medium shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Save"
             >
-              <Save className="w-4 h-4 mr-1" />
-              Save
+              <Save className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="border-b border-gray-200 px-8 py-2 bg-gray-50">
+      <div className="border-b border-writer-border dark:border-dark-border px-8 py-2 bg-writer-muted dark:bg-dark-muted">
         <div className="flex items-center space-x-1">
           {/* Undo/Redo */}
-          <div className="flex items-center space-x-1 pr-3 border-r border-gray-300">
+          <div className="flex items-center space-x-1 pr-3 border-r border-writer-border dark:border-dark-border">
             <button
               onClick={() => editor.chain().focus().undo().run()}
               disabled={!editor.can().undo()}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-icon disabled:opacity-50 disabled:cursor-not-allowed"
               title="Undo (Ctrl+Z)"
             >
               <Undo className="w-4 h-4" />
@@ -427,7 +463,7 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
             <button
               onClick={() => editor.chain().focus().redo().run()}
               disabled={!editor.can().redo()}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-icon disabled:opacity-50 disabled:cursor-not-allowed"
               title="Redo (Ctrl+Y)"
             >
               <Redo className="w-4 h-4" />
@@ -440,8 +476,10 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
               <button
                 key={index}
                 onClick={action.action}
-                className={`p-2 rounded hover:bg-gray-100 ${
-                  action.isActive() ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:text-gray-900'
+                className={`p-2 rounded transition-all duration-200 ${
+                  action.isActive() 
+                    ? 'bg-writer-accent dark:bg-dark-accent text-black' 
+                    : 'text-writer-text dark:text-dark-text hover:text-writer-heading dark:hover:text-dark-heading hover:bg-writer-muted dark:hover:bg-dark-muted'
                 }`}
                 title={`${action.label}${action.shortcut ? ` (${action.shortcut})` : ''}`}
               >
@@ -453,7 +491,7 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
           <div className="flex-1" />
           
           {/* AI Assistant */}
-          <div className="flex items-center space-x-1 pl-3 border-l border-gray-300">
+          <div className="flex items-center space-x-1 pl-3 border-l border-writer-border dark:border-dark-border">
             <AIPromptsManager
               novelId={novelId}
               selectedText={selectedText}
@@ -468,30 +506,29 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
               onResult={handleAIResult}
             />
           </div>
+          
+          {/* Guide Toggle */}
+          {onToggleGuide && (
+            <div className="flex items-center space-x-1 pl-3 border-l border-writer-border dark:border-dark-border">
+              <button
+                onClick={() => onToggleGuide(!showGuide)}
+                className={`p-2 rounded transition-all duration-200 ${
+                  showGuide 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-writer-text dark:text-dark-text hover:text-writer-heading dark:hover:text-dark-heading hover:bg-writer-muted dark:hover:bg-dark-muted'
+                }`}
+                title="Toggle chapter structure guide"
+              >
+                <Layout className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Editor */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto">
-          {/* Chapter Title in Editor */}
-          <div className="px-8 pt-8 pb-4">
-            <input 
-              type="text"
-              value={chapterTitle}
-              onChange={(e) => setChapterTitle(e.target.value)}
-              onBlur={(e) => handleTitleChange(e.target.value.trim())}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.target.blur();
-                  editor?.commands.focus();
-                }
-              }}
-              className="text-3xl font-bold text-gray-900 mb-6 border-none focus:outline-none bg-transparent w-full placeholder-gray-400"
-              placeholder="Chapter Title"
-            />
-          </div>
+        <div className="max-w-4xl mx-auto px-8 pt-8 pb-4">
           <EditorContent 
             editor={editor}
             className="min-h-[500px] focus-within:outline-none"
@@ -500,8 +537,8 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
       </div>
 
       {/* Status Bar */}
-      <div className="border-t border-gray-200 px-8 py-2 bg-gray-50">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="border-t border-writer-border dark:border-dark-border px-8 py-2 bg-writer-muted dark:bg-dark-muted">
+        <div className="flex items-center justify-between text-xs text-writer-subtle dark:text-dark-subtle">
           <div className="flex items-center space-x-4">
             <span>Press Ctrl+Z to undo, Ctrl+Y to redo</span>
           </div>
@@ -523,6 +560,16 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
         onClose={() => setShowVersionHistory(false)}
         chapter={chapter}
         onRestore={handleVersionRestore}
+      />
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteChapter}
+        title="Delete Chapter"
+        message={`Are you sure you want to delete "${chapter.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        confirmStyle="danger"
       />
     </div>
   );

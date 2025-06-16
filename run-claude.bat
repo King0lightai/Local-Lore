@@ -1,3 +1,3 @@
 @echo off
 echo Starting Claude Code in WSL...
-wsl -d Ubuntu -e bash -c "cd '/mnt/c/Users/zeepe/OneDrive/Desktop/Local-Lore ' && node/usr/lib/node_modules/@anthropic-ai/claude-code/cli.js %*"
+wsl -d Ubuntu -e bash -c "cd '/mnt/c/Users/zeepe/OneDrive/Desktop/Local-Lore' && node /usr/lib/node_modules/@anthropic-ai/claude-code/cli.js %*"

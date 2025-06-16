@@ -42,9 +42,9 @@ export function Modal({ isOpen, onClose, title, children, size = 'medium' }) {
   return (
     <div className="modal-overlay animate-in">
       <div className="flex min-h-full items-center justify-center p-4">
-        {/* Backdrop */}
+        {/* Invisible backdrop for click-to-close */}
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0"
           onClick={onClose}
         />
 
@@ -77,9 +77,9 @@ export function Modal({ isOpen, onClose, title, children, size = 'medium' }) {
 
 export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText = 'Confirm', cancelText = 'Cancel', confirmStyle = 'danger' }) {
   const confirmStyles = {
-    danger: 'bg-writer-error hover:bg-writer-error/90',
-    primary: 'bg-writer-accent hover:bg-writer-accent/90',
-    success: 'bg-writer-success hover:bg-writer-success/90'
+    danger: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700',
+    primary: 'bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600',
+    success: 'bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600'
   };
 
   return (
@@ -209,7 +209,7 @@ export function InputModal({ isOpen, onClose, onSubmit, title, fields, submitTex
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white rounded-lg font-medium shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitText}
           </button>

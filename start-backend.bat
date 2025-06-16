@@ -1,5 +1,5 @@
 @echo off
-echo Starting Scribber Backend...
+echo Starting Local Lore Backend...
 cd Local-Lore-App\backend
 call npm install
 echo.

@@ -182,7 +182,7 @@ function SearchModal({ isOpen, onClose, storyElements, chapters, onSelectChapter
       return (
         <>
           {text.slice(0, index)}
-          <mark className="bg-yellow-200 px-1 rounded">{text.slice(index, index + query.length)}</mark>
+          <mark className="bg-writer-accent/30 dark:bg-dark-accent/30 px-1 rounded">{text.slice(index, index + query.length)}</mark>
           {text.slice(index + query.length)}
         </>
       );
@@ -218,7 +218,7 @@ function SearchModal({ isOpen, onClose, storyElements, chapters, onSelectChapter
       <div className="space-y-4">
         {/* Search Input */}
         <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-writer-subtle dark:text-dark-subtle w-5 h-5" />
           <input
             ref={searchInputRef}
             type="text"
@@ -226,12 +226,12 @@ function SearchModal({ isOpen, onClose, storyElements, chapters, onSelectChapter
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search chapters, characters, places, events, lore, and items..."
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="input-primary pl-10 pr-4 py-3"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text"
             >
               <X className="w-5 h-5" />
             </button>
@@ -241,12 +241,12 @@ function SearchModal({ isOpen, onClose, storyElements, chapters, onSelectChapter
         {/* Results */}
         <div className="max-h-96 overflow-y-auto">
           {!query.trim() ? (
-            <div className="text-center py-8 text-gray-500">
-              <SearchIcon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <div className="text-center py-8 text-writer-subtle dark:text-dark-subtle">
+              <SearchIcon className="w-12 h-12 mx-auto mb-3 text-writer-muted dark:text-dark-muted" />
               <p>Start typing to search across all your content</p>
             </div>
           ) : results.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-writer-subtle dark:text-dark-subtle">
               <p>No results found for "{query}"</p>
             </div>
           ) : (
@@ -263,23 +263,23 @@ function SearchModal({ isOpen, onClose, storyElements, chapters, onSelectChapter
                       onClick={() => handleSelectResult(result)}
                       className={`p-3 rounded-lg cursor-pointer transition-colors ${
                         index === selectedIndex 
-                          ? 'bg-indigo-50 border border-indigo-200' 
-                          : 'hover:bg-gray-50 border border-transparent'
+                          ? 'bg-writer-accent/10 dark:bg-dark-accent/10 border border-writer-accent dark:border-dark-accent' 
+                          : 'hover:bg-writer-muted dark:hover:bg-dark-muted border border-transparent'
                       }`}
                     >
                       <div className="flex items-start space-x-3">
-                        <Icon className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <Icon className="w-5 h-5 text-writer-subtle dark:text-dark-subtle mt-0.5 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2">
-                            <p className="font-medium text-gray-900">
+                            <p className="font-medium text-writer-heading dark:text-dark-heading">
                               {highlightMatch(displayName, query)}
                             </p>
-                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            <span className="text-xs text-writer-subtle dark:text-dark-subtle bg-writer-muted dark:bg-dark-muted px-2 py-1 rounded">
                               {SEARCH_TYPES[result.type]?.label || result.type}
                             </span>
                           </div>
                           {displayValue && (
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                            <p className="text-sm text-writer-text dark:text-dark-text mt-1 line-clamp-2">
                               {highlightMatch(displayValue, query)}
                             </p>
                           )}
@@ -297,7 +297,7 @@ function SearchModal({ isOpen, onClose, storyElements, chapters, onSelectChapter
         </div>
 
         {results.length > 0 && (
-          <div className="text-xs text-gray-500 text-center pt-2 border-t">
+          <div className="text-xs text-writer-subtle dark:text-dark-subtle text-center pt-2 border-t border-writer-border dark:border-dark-border">
             Use ↑↓ arrow keys to navigate, Enter to select
           </div>
         )}
