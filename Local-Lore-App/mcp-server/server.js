@@ -392,6 +392,89 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ['novelId']
         }
+      },
+      {
+        name: 'get_ai_prompts',
+        description: 'Get all AI prompts for a novel, prioritizing AI notes and system prompts',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            novelId: { type: 'number', description: 'The ID of the novel' },
+            activeOnly: { type: 'boolean', description: 'Only return active prompts' }
+          },
+          required: ['novelId']
+        }
+      },
+      {
+        name: 'add_ai_prompt',
+        description: 'Add a new AI prompt to guide story writing',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            novelId: { type: 'number', description: 'The ID of the novel' },
+            name: { type: 'string', description: 'Prompt name' },
+            category: { type: 'string', description: 'Prompt category (style, character, genre, scene, tone, general)' },
+            promptText: { type: 'string', description: 'The prompt text content' },
+            priority: { type: 'number', description: 'Priority level (higher = more important)' },
+            isActive: { type: 'boolean', description: 'Whether the prompt is active' }
+          },
+          required: ['novelId', 'name', 'promptText']
+        }
+      },
+      {
+        name: 'update_ai_prompt',
+        description: 'Update an existing AI prompt (non-system prompts only)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            promptId: { type: 'number', description: 'The ID of the prompt' },
+            name: { type: 'string', description: 'Prompt name' },
+            category: { type: 'string', description: 'Prompt category' },
+            promptText: { type: 'string', description: 'The prompt text content' },
+            priority: { type: 'number', description: 'Priority level' },
+            isActive: { type: 'boolean', description: 'Whether the prompt is active' }
+          },
+          required: ['promptId']
+        }
+      },
+      {
+        name: 'delete_ai_prompt',
+        description: 'Delete an AI prompt (non-system prompts only)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            promptId: { type: 'number', description: 'The ID of the prompt to delete' }
+          },
+          required: ['promptId']
+        }
+      },
+      {
+        name: 'execute_ai_prompt',
+        description: 'Execute an AI prompt with story context for writing assistance',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            promptId: { type: 'number', description: 'The ID of the prompt to execute' },
+            selectedText: { type: 'string', description: 'Currently selected text (optional)' },
+            chapterId: { type: 'number', description: 'Current chapter ID for context (optional)' },
+            novelId: { type: 'number', description: 'The ID of the novel' }
+          },
+          required: ['promptId', 'novelId']
+        }
+      },
+      {
+        name: 'get_writing_context',
+        description: 'Get comprehensive writing context including AI prompts, story elements, and current content for Claude assistance',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            novelId: { type: 'number', description: 'The ID of the novel' },
+            chapterId: { type: 'number', description: 'Current chapter ID (optional)' },
+            selectedText: { type: 'string', description: 'Selected text (optional)' },
+            includePrompts: { type: 'boolean', description: 'Include AI prompts in context (default: true)' }
+          },
+          required: ['novelId']
+        }
       }
     ]
   };
@@ -960,6 +1043,149 @@ This summary provides Claude with a complete "story so far" context including pl
         };
       }
 
+      case 'get_ai_prompts': {
+        const { novelId, activeOnly = false } = args;
+        const endpoint = activeOnly 
+          ? `${LOCAL_LORE_API}/novels/${novelId}/ai-prompts/active`
+          : `${LOCAL_LORE_API}/novels/${novelId}/ai-prompts`;
+        
+        const response = await axios.get(endpoint);
+        const prompts = response.data;
+        
+        // Sort by priority (highest first), then by system prompts first, then by name
+        const sortedPrompts = prompts.sort((a, b) => {
+          if (a.priority !== b.priority) return b.priority - a.priority;
+          if (a.is_system !== b.is_system) return b.is_system - a.is_system;
+          return a.name.localeCompare(b.name);
+        });
+
+        return {
+          content: [{
+            type: 'text',
+            text: `🧠 AI PROMPTS FOR NOVEL ${novelId}${activeOnly ? ' (ACTIVE ONLY)' : ''}:
+
+${sortedPrompts.length === 0 ? 'No prompts found.' : ''}${sortedPrompts.map(prompt => 
+  `📝 ${prompt.name} ${prompt.is_system ? '(SYSTEM)' : ''}${!prompt.is_active ? ' (INACTIVE)' : ''}
+   Category: ${prompt.category}
+   Priority: ${prompt.priority}
+   Text: ${prompt.prompt_text}
+   Created: ${new Date(prompt.created_at).toLocaleDateString()}
+   ID: ${prompt.id}`
+).join('\n\n')}
+
+${prompts.filter(p => p.is_system).length > 0 ? '\n💡 System prompts (like Anti-AI-isms) are automatically applied and cannot be edited.' : ''}
+${prompts.filter(p => p.is_active).length} of ${prompts.length} prompts are currently active.`
+          }]
+        };
+      }
+
+      case 'add_ai_prompt': {
+        const { novelId, name, category = 'general', promptText, priority = 0, isActive = true } = args;
+        const response = await axios.post(`${LOCAL_LORE_API}/novels/${novelId}/ai-prompts`, {
+          name,
+          category,
+          prompt_text: promptText,
+          priority,
+          is_active: isActive
+        });
+        
+        return {
+          content: [{
+            type: 'text',
+            text: `✅ AI Prompt created successfully!
+
+Name: ${response.data.name}
+Category: ${response.data.category}
+Priority: ${response.data.priority}
+Active: ${response.data.is_active ? 'Yes' : 'No'}
+Text: ${response.data.prompt_text}`
+          }]
+        };
+      }
+
+      case 'update_ai_prompt': {
+        const { promptId, name, category, promptText, priority, isActive } = args;
+        
+        // Build update data from provided arguments
+        const updateData = {};
+        if (name !== undefined) updateData.name = name;
+        if (category !== undefined) updateData.category = category;
+        if (promptText !== undefined) updateData.prompt_text = promptText;
+        if (priority !== undefined) updateData.priority = priority;
+        if (isActive !== undefined) updateData.is_active = isActive;
+        
+        const response = await axios.put(`${LOCAL_LORE_API}/ai-prompts/${promptId}`, updateData);
+        
+        return {
+          content: [{
+            type: 'text',
+            text: `✅ AI Prompt updated successfully!
+
+Name: ${response.data.name || name || 'Unchanged'}
+Category: ${response.data.category || category || 'Unchanged'}
+Priority: ${response.data.priority !== undefined ? response.data.priority : priority || 'Unchanged'}
+Active: ${response.data.is_active !== undefined ? (response.data.is_active ? 'Yes' : 'No') : (isActive !== undefined ? (isActive ? 'Yes' : 'No') : 'Unchanged')}
+Text: ${response.data.prompt_text || promptText || 'Unchanged'}`
+          }]
+        };
+      }
+
+      case 'delete_ai_prompt': {
+        const { promptId } = args;
+        const response = await axios.delete(`${LOCAL_LORE_API}/ai-prompts/${promptId}`);
+        
+        return {
+          content: [{
+            type: 'text',
+            text: `✅ AI Prompt deleted successfully!
+
+Deleted: ${response.data.deleted.name}
+Category: ${response.data.deleted.category}
+Text: ${response.data.deleted.prompt_text}`
+          }]
+        };
+      }
+
+      case 'execute_ai_prompt': {
+        const { promptId, selectedText = '', chapterId, novelId } = args;
+        
+        // Get the specific prompt from the novel's prompts
+        const promptsResponse = await axios.get(`${LOCAL_LORE_API}/novels/${novelId}/ai-prompts`);
+        const prompt = promptsResponse.data.find(p => p.id === promptId);
+        
+        if (!prompt) {
+          throw new Error(`Prompt ${promptId} not found in novel ${novelId}`);
+        }
+        
+        // Get comprehensive context
+        const context = await getWritingContext(novelId, chapterId, selectedText, true);
+        
+        return {
+          content: [{
+            type: 'text',
+            text: `🎯 EXECUTING AI PROMPT: "${prompt.name}"
+
+📝 PROMPT: ${prompt.prompt_text}
+
+${context}
+
+💡 This prompt has been applied with full story context. Use this information to provide writing assistance according to the prompt guidelines.`
+          }]
+        };
+      }
+
+      case 'get_writing_context': {
+        const { novelId, chapterId, selectedText = '', includePrompts = true } = args;
+        const context = await getWritingContext(novelId, chapterId, selectedText, includePrompts);
+        
+        return {
+          content: [{
+            type: 'text',
+            text: context
+          }]
+        };
+      }
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -989,6 +1215,111 @@ async function getStoryContext(novelId) {
     lore: lore.data,
     items: items.data
   };
+}
+
+async function getWritingContext(novelId, chapterId = null, selectedText = '', includePrompts = true) {
+  let contextText = '📝 WRITING CONTEXT:\n\n';
+  
+  // Get AI prompts if requested (prioritizing active ones and system prompts)
+  if (includePrompts) {
+    try {
+      const promptsResponse = await axios.get(`${LOCAL_LORE_API}/novels/${novelId}/ai-prompts/active`);
+      const activePrompts = promptsResponse.data;
+      
+      if (activePrompts.length > 0) {
+        // Sort prompts: system first (highest priority), then by priority level, then by name
+        const sortedPrompts = activePrompts.sort((a, b) => {
+          if (a.is_system !== b.is_system) return b.is_system - a.is_system;
+          if (a.priority !== b.priority) return b.priority - a.priority;
+          return a.name.localeCompare(b.name);
+        });
+        
+        contextText += '🧠 ACTIVE WRITING GUIDELINES (AI Notes):\n';
+        sortedPrompts.forEach((prompt, index) => {
+          contextText += `${index + 1}. ${prompt.name} ${prompt.is_system ? '(SYSTEM)' : ''}:\n   ${prompt.prompt_text}\n`;
+        });
+        contextText += '\n';
+      }
+    } catch (error) {
+      console.error('Error fetching AI prompts:', error);
+    }
+  }
+
+  // Add selected text if provided
+  if (selectedText) {
+    contextText += `📖 SELECTED TEXT:\n"${selectedText}"\n\n`;
+  }
+
+  // Add current chapter context if provided
+  if (chapterId) {
+    try {
+      const chaptersResponse = await axios.get(`${LOCAL_LORE_API}/novels/${novelId}/chapters`);
+      const chapter = chaptersResponse.data.find(c => c.id === chapterId);
+      if (chapter) {
+        const wordCount = chapter.content ? chapter.content.split(/\s+/).filter(word => word.length > 0).length : 0;
+        contextText += `📄 CURRENT CHAPTER: "${chapter.title}"\n`;
+        contextText += `Word count: ${wordCount}\n`;
+        if (chapter.content) {
+          contextText += `Content preview: ${chapter.content.substring(0, 300)}${chapter.content.length > 300 ? '...' : ''}\n\n`;
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching chapter:', error);
+    }
+  }
+
+  // Get comprehensive story context
+  try {
+    const storyContext = await getStoryContext(novelId);
+    
+    contextText += '🌍 STORY ELEMENTS:\n';
+    
+    if (storyContext.characters.length > 0) {
+      contextText += `\n👥 CHARACTERS (${storyContext.characters.length}):\n`;
+      storyContext.characters.forEach(char => {
+        contextText += `• ${char.name}: ${char.description || 'No description'}\n`;
+        if (char.traits) contextText += `  Traits: ${char.traits}\n`;
+      });
+    }
+    
+    if (storyContext.places.length > 0) {
+      contextText += `\n🗺️ PLACES (${storyContext.places.length}):\n`;
+      storyContext.places.forEach(place => {
+        contextText += `• ${place.name}: ${place.description || 'No description'}\n`;
+      });
+    }
+    
+    if (storyContext.events.length > 0) {
+      contextText += `\n📅 EVENTS (${storyContext.events.length}):\n`;
+      storyContext.events.forEach(event => {
+        contextText += `• ${event.title}: ${event.description || 'No description'}\n`;
+        if (event.chapter_id) contextText += `  (Chapter ${event.chapter_id})\n`;
+      });
+    }
+    
+    if (storyContext.lore.length > 0) {
+      contextText += `\n📜 LORE (${storyContext.lore.length}):\n`;
+      storyContext.lore.forEach(lore => {
+        contextText += `• ${lore.title} (${lore.category || 'Uncategorized'}): ${lore.content}\n`;
+      });
+    }
+    
+    if (storyContext.items.length > 0) {
+      contextText += `\n🎒 ITEMS (${storyContext.items.length}):\n`;
+      storyContext.items.forEach(item => {
+        contextText += `• ${item.name}: ${item.description || 'No description'}\n`;
+        if (item.properties) contextText += `  Properties: ${item.properties}\n`;
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error fetching story context:', error);
+    contextText += '\n❌ Error loading story elements\n';
+  }
+
+  contextText += '\n💡 Use this context to provide writing assistance that aligns with the established story world, characters, and writing guidelines.';
+  
+  return contextText;
 }
 
 async function main() {
