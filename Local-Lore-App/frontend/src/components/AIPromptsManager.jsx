@@ -307,7 +307,7 @@ function AIPromptsManager({ novelId, selectedText, chapter, storyElements, onRes
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded"
+        className="p-2 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-900/20 rounded"
         title="AI Assistant"
       >
         <Wand2 className="w-5 h-5" />
@@ -350,7 +350,7 @@ function AIPromptsManager({ novelId, selectedText, chapter, storyElements, onRes
                 </div>
                 <button
                   onClick={() => setCreateModal({ isOpen: true })}
-                  className="flex items-center px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                  className="flex items-center px-3 py-1.5 text-sm bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Prompt

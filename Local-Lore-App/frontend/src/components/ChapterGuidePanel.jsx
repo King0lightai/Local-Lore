@@ -12,7 +12,6 @@ const STORY_LEVELS = {
 function ChapterGuidePanel({ novelId, chapter, onClose }) {
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [expandedScenes, setExpandedScenes] = useState(new Set());
   const [selectedOutline, setSelectedOutline] = useState(null);
 
   useEffect(() => {
@@ -63,17 +62,6 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
     }
   };
 
-  const toggleScene = (sceneId) => {
-    setExpandedScenes(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(sceneId)) {
-        newSet.delete(sceneId);
-      } else {
-        newSet.add(sceneId);
-      }
-      return newSet;
-    });
-  };
 
   const getScenes = () => {
     return sections
@@ -141,7 +129,6 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
           <div className="p-3 space-y-2">
             {scenes.map(scene => {
               const beats = getBeatsForScene(scene.id);
-              const isExpanded = expandedScenes.has(scene.id);
               
               return (
                 <div key={scene.id} className="border border-writer-border/50 dark:border-dark-border/50 rounded-lg overflow-hidden">
@@ -149,16 +136,6 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
                   <div className="bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800/30 p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2 flex-1 min-w-0">
-                        <button
-                          onClick={() => toggleScene(scene.id)}
-                          className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors"
-                        >
-                          {isExpanded ? (
-                            <ChevronDown className="w-3 h-3 text-green-600 dark:text-green-400" />
-                          ) : (
-                            <ChevronRight className="w-3 h-3 text-green-600 dark:text-green-400" />
-                          )}
-                        </button>
                         <div className="w-4 h-4 bg-green-100 dark:bg-green-800/50 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
                           {scene.order_index || 1}
                         </div>
@@ -182,7 +159,7 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
                       </div>
                     </div>
                     {scene.description && (
-                      <div className="mt-2 ml-6">
+                      <div className="mt-2 ml-1">
                         <p className="text-xs text-green-700 dark:text-green-300 font-medium">Summary:</p>
                         <p className="text-xs text-green-700 dark:text-green-300 mt-1">
                           {scene.description}
@@ -190,7 +167,7 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
                       </div>
                     )}
                     {scene.content && (
-                      <div className="mt-2 ml-6">
+                      <div className="mt-2 ml-1">
                         <p className="text-xs text-green-700 dark:text-green-300 font-medium">Notes:</p>
                         <p className="text-xs text-green-700 dark:text-green-300 mt-1 whitespace-pre-line">
                           {scene.content}
@@ -199,17 +176,8 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
                     )}
                   </div>
 
-                  {/* Collapsed beats hint */}
-                  {!isExpanded && beats.length > 0 && (
-                    <div className="px-3 py-2 bg-orange-50/20 dark:bg-orange-900/5 border-t border-orange-200/30 dark:border-orange-800/20">
-                      <p className="text-xs text-orange-600 dark:text-orange-400 italic">
-                        Click to expand and see {beats.length} beat{beats.length !== 1 ? 's' : ''} with details
-                      </p>
-                    </div>
-                  )}
-
-                  {/* No beats message when expanded */}
-                  {isExpanded && beats.length === 0 && (
+                  {/* No beats message */}
+                  {beats.length === 0 && (
                     <div className="px-3 py-4 bg-orange-50/20 dark:bg-orange-900/5 border-t border-orange-200/30 dark:border-orange-800/20 text-center">
                       <p className="text-xs text-orange-600 dark:text-orange-400 italic">
                         No beats defined for this scene yet. Add beats in the outline to break down the action.
@@ -217,8 +185,8 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
                     </div>
                   )}
 
-                  {/* Beats (expandable) */}
-                  {isExpanded && beats.length > 0 && (
+                  {/* Beats (always visible) */}
+                  {beats.length > 0 && (
                     <div className="p-3 bg-orange-50/30 dark:bg-orange-900/10 space-y-2">
                       {beats.map(beat => (
                         <div key={beat.id} className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/30 rounded p-3">

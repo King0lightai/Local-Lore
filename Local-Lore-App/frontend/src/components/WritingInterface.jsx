@@ -9,6 +9,7 @@ import ExportModal from './ExportModal';
 import OutlineView from './OutlineView';
 import NotesView from './NotesView';
 import ChapterGuidePanel from './ChapterGuidePanel';
+import AIPromptsManager from './AIPromptsManager';
 import axios from 'axios';
 import { useToast } from './Toast';
 import { LoadingSpinner } from './LoadingSpinner';
@@ -214,23 +215,13 @@ function WritingInterface() {
         axios.get(`/api/novels/${id}/items`)
       ]);
 
-      // Fetch notes separately to prevent it from breaking other elements
-      let notesData = [];
-      try {
-        const notes = await axios.get(`/api/novels/${id}/notes`);
-        notesData = notes.data;
-      } catch (noteError) {
-        console.error('Error fetching notes:', noteError);
-        // Continue without notes
-      }
-
       setStoryElements({
         characters: characters.data,
         places: places.data,
         events: events.data,
         lore: lore.data,
         items: items.data,
-        notes: notesData
+        notes: [] // AI Notes should be separate from sticky notes
       });
     } catch (error) {
       console.error('Error fetching story elements:', error);
@@ -656,7 +647,7 @@ function WritingInterface() {
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'lore', label: 'Lore', icon: BookOpen },
     { id: 'items', label: 'Items', icon: Package },
-    { id: 'notes', label: 'AI', icon: StickyNote }
+    { id: 'notes', label: 'AI Notes', icon: StickyNote }
   ];
 
   if (loading) {
@@ -717,6 +708,17 @@ function WritingInterface() {
                 >
                   <Download className="w-4 h-4" />
                 </button>
+                <AIPromptsManager
+                  novelId={id}
+                  selectedText=""
+                  chapter={selectedChapter}
+                  storyElements={storyElements}
+                  onResult={(result) => {
+                    if (result) {
+                      showToast('AI prompt executed successfully', 'success');
+                    }
+                  }}
+                />
               </div>
             </div>
             
@@ -873,29 +875,25 @@ function WritingInterface() {
             onClose={() => setShowNotes(false)}
           />
         ) : selectedChapter ? (
-          <div className="h-full bg-writer-surface dark:bg-dark-surface flex">
-            <div className="flex-1">
-              <Editor
-                key={selectedChapter.id}
-                novelId={id}
-                novel={novel}
-                chapters={chapters}
-                chapter={selectedChapter}
-                onSave={handleChapterUpdate}
-                onDeleteChapter={handleChapterDelete}
-                onEditorReady={setEditorRef}
-                focusMode={focusMode}
-                onFocusModeChange={setFocusMode}
-                showGuide={showGuide}
-                onToggleGuide={setShowGuide}
-                storyContext={{
-                  characters: storyElements.characters,
-                  places: storyElements.places,
-                  events: storyElements.events.filter(e => e.chapter_id === selectedChapter.id)
-                }}
-              />
-            </div>
-            {showGuide && (
+          <Editor
+            key={selectedChapter.id}
+            novelId={id}
+            novel={novel}
+            chapters={chapters}
+            chapter={selectedChapter}
+            onSave={handleChapterUpdate}
+            onDeleteChapter={handleChapterDelete}
+            onEditorReady={setEditorRef}
+            focusMode={focusMode}
+            onFocusModeChange={setFocusMode}
+            showGuide={showGuide}
+            onToggleGuide={setShowGuide}
+            storyContext={{
+              characters: storyElements.characters,
+              places: storyElements.places,
+              events: storyElements.events.filter(e => e.chapter_id === selectedChapter.id)
+            }}
+            guidePanel={
               <ChapterGuidePanel
                 novelId={id}
                 chapter={selectedChapter}
@@ -911,8 +909,8 @@ function WritingInterface() {
                   // Note: We'll need to pass creation data to OutlineView
                 }}
               />
-            )}
-          </div>
+            }
+          />
         ) : (
           <div className="h-full flex items-center justify-center bg-writer-surface dark:bg-dark-surface">
             <div className="text-center space-y-4">

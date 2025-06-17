@@ -4,14 +4,12 @@ import StarterKit from '@tiptap/starter-kit';
 import { Save, AlertCircle, CheckCircle, Loader, Undo, Redo, Bold, Italic, List, ListOrdered, Clock, Focus, Maximize2, Trash2, Layout } from 'lucide-react';
 import { useToast } from './Toast';
 import VersionHistory from './VersionHistory';
-import AIPromptsManager from './AIPromptsManager';
 import { ConfirmModal } from './Modal';
 
-function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, chapters, focusMode, onFocusModeChange, onDeleteChapter, showGuide, onToggleGuide }) {
+function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, chapters, focusMode, onFocusModeChange, onDeleteChapter, showGuide, onToggleGuide, guidePanel }) {
   const { showToast } = useToast();
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved', 'saving', 'error'
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
   const [chapterTitle, setChapterTitle] = useState(chapter.title);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const saveTimeoutRef = useRef(null);
@@ -205,43 +203,6 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
     }
   };
 
-  // Handle text selection for AI Assistant
-  useEffect(() => {
-    if (!editor) return;
-
-    const handleSelectionChange = () => {
-      const { from, to } = editor.state.selection;
-      if (from !== to) {
-        const text = editor.state.doc.textBetween(from, to, ' ');
-        setSelectedText(text);
-      } else {
-        setSelectedText('');
-      }
-    };
-
-    editor.on('selectionUpdate', handleSelectionChange);
-    
-    return () => {
-      editor.off('selectionUpdate', handleSelectionChange);
-    };
-  }, [editor]);
-
-  // Handle AI Assistant results
-  const handleAIResult = (result) => {
-    if (result && selectedText && editor) {
-      // Replace selected text with AI result
-      const { from, to } = editor.state.selection;
-      if (from !== to) {
-        editor.chain().focus().insertContentAt({ from, to }, result).run();
-      } else {
-        // If no selection, insert at cursor
-        editor.chain().focus().insertContent(result).run();
-      }
-    } else if (result) {
-      // Show result in a toast or modal for non-replacement actions like outline/summary
-      showToast(result.substring(0, 100) + '...', 'success');
-    }
-  };
 
   // Custom word and character counting
   const getTextContent = (html) => {
@@ -490,23 +451,6 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
 
           <div className="flex-1" />
           
-          {/* AI Assistant */}
-          <div className="flex items-center space-x-1 pl-3 border-l border-writer-border dark:border-dark-border">
-            <AIPromptsManager
-              novelId={novelId}
-              selectedText={selectedText}
-              chapter={chapter}
-              storyElements={{
-                characters: storyContext?.characters || [],
-                places: storyContext?.places || [],
-                events: storyContext?.events || [],
-                lore: storyContext?.lore || [],
-                items: storyContext?.items || []
-              }}
-              onResult={handleAIResult}
-            />
-          </div>
-          
           {/* Guide Toggle */}
           {onToggleGuide && (
             <div className="flex items-center space-x-1 pl-3 border-l border-writer-border dark:border-dark-border">
@@ -514,7 +458,7 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
                 onClick={() => onToggleGuide(!showGuide)}
                 className={`p-2 rounded transition-all duration-200 ${
                   showGuide 
-                    ? 'bg-blue-500 text-white shadow-sm' 
+                    ? 'bg-emerald-500 text-white shadow-sm' 
                     : 'text-writer-text dark:text-dark-text hover:text-writer-heading dark:hover:text-dark-heading hover:bg-writer-muted dark:hover:bg-dark-muted'
                 }`}
                 title="Toggle chapter structure guide"
@@ -526,14 +470,20 @@ function Editor({ chapter, onSave, storyContext, onEditorReady, novelId, novel, 
         </div>
       </div>
 
-      {/* Editor */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-8 pt-8 pb-4">
-          <EditorContent 
-            editor={editor}
-            className="min-h-[500px] focus-within:outline-none"
-          />
+      {/* Editor Content Area */}
+      <div className="flex-1 overflow-hidden flex">
+        {/* Main Editor */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-8 pt-8 pb-4">
+            <EditorContent 
+              editor={editor}
+              className="min-h-[500px] focus-within:outline-none"
+            />
+          </div>
         </div>
+        
+        {/* Chapter Guide Panel - conditionally rendered */}
+        {showGuide && guidePanel}
       </div>
 
       {/* Status Bar */}
