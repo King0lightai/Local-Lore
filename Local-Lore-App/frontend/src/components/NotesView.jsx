@@ -32,24 +32,32 @@ function StickyNote({
   isDragging,
   scale = 1
 }) {
-  const [isEditing, setIsEditing] = useState(false);
   const [position, setPosition] = useState({ x: note.x || 0, y: note.y || 0 });
   const [size, setSize] = useState({ width: note.width || 200, height: note.height || 150 });
   const [isDraggingLocal, setIsDraggingLocal] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingContent, setIsEditingContent] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [tempTitle, setTempTitle] = useState(note.title || '');
+  const [tempContent, setTempContent] = useState(note.content || '');
   const noteRef = useRef(null);
+  const titleInputRef = useRef(null);
+  const contentTextareaRef = useRef(null);
 
   const noteColor = NOTE_COLORS.find(c => c.value === note.color) || NOTE_COLORS[0];
 
   const handleMouseDown = (e) => {
-    // Completely disable drag if any modal is open
-    if (document.querySelector('[role="dialog"]') || document.querySelector('.fixed.inset-0')) {
+    // Completely disable drag if any modal is open or if editing
+    if (document.querySelector('[role="dialog"]') || document.querySelector('.fixed.inset-0') || 
+        isEditingTitle || isEditingContent || showColorPicker) {
       return;
     }
     
-    if (e.target.closest('.note-content') || e.target.closest('.note-actions') || e.target.closest('.resize-handle')) {
+    if (e.target.closest('.note-content') || e.target.closest('.note-actions') || 
+        e.target.closest('.resize-handle') || e.target.closest('.color-picker')) {
       return; // Don't drag if clicking on content, action buttons, or resize handle
     }
     
@@ -133,6 +141,70 @@ function StickyNote({
     }
   }, [isDraggingLocal, isResizing, dragStart, resizeStart, position, size]);
 
+  // Focus inputs when editing starts
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
+
+  useEffect(() => {
+    if (isEditingContent && contentTextareaRef.current) {
+      contentTextareaRef.current.focus();
+      contentTextareaRef.current.select();
+    }
+  }, [isEditingContent]);
+
+  const handleTitleSave = () => {
+    onEdit(note.id, { ...note, title: tempTitle });
+    setIsEditingTitle(false);
+  };
+
+  const handleContentSave = () => {
+    onEdit(note.id, { ...note, content: tempContent });
+    setIsEditingContent(false);
+  };
+
+  const handleColorChange = (color) => {
+    onEdit(note.id, { ...note, color });
+    setShowColorPicker(false);
+  };
+
+  const handleTitleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleTitleSave();
+    } else if (e.key === 'Escape') {
+      setTempTitle(note.title || '');
+      setIsEditingTitle(false);
+    }
+  };
+
+  const handleContentKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      setTempContent(note.content || '');
+      setIsEditingContent(false);
+    } else if (e.key === 'Tab' && e.ctrlKey) {
+      e.preventDefault();
+      handleContentSave();
+    }
+  };
+
+  // Close color picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showColorPicker && !e.target.closest('.color-picker') && !e.target.closest('[title="Change color"]')) {
+        setShowColorPicker(false);
+      }
+    };
+
+    if (showColorPicker) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showColorPicker]);
+
   return (
     <div
       ref={noteRef}
@@ -159,11 +231,11 @@ function StickyNote({
           </div>
           <div className="note-actions flex items-center space-x-1">
             <button
-              onClick={() => setIsEditing(true)}
-              className="p-1 hover:bg-black/10 rounded"
-              title="Edit note"
+              onClick={() => setShowColorPicker(!showColorPicker)}
+              className="p-1 hover:bg-black/10 rounded relative"
+              title="Change color"
             >
-              <Edit3 className="w-3 h-3 text-gray-600" />
+              <Palette className="w-3 h-3 text-gray-600" />
             </button>
             <button
               onClick={() => onDelete(note)}
@@ -175,19 +247,78 @@ function StickyNote({
           </div>
         </div>
 
+        {/* Color Picker Dropdown */}
+        {showColorPicker && (
+          <div className="color-picker absolute top-10 right-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 z-50">
+            <div className="grid grid-cols-4 gap-1">
+              {NOTE_COLORS.map(color => (
+                <button
+                  key={color.value}
+                  onClick={() => handleColorChange(color.value)}
+                  className={`w-8 h-8 rounded border-2 transition-all duration-200 hover:scale-110`}
+                  style={{ backgroundColor: color.value, borderColor: color.border }}
+                  title={color.name}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Note Content */}
-        <div 
-          className="note-content flex-1 overflow-hidden cursor-pointer"
-          onDoubleClick={() => setIsEditing(true)}
-          title="Double-click to edit"
-        >
-          {note.title && (
-            <h4 className="font-semibold text-sm mb-1 text-gray-800 truncate">
-              {note.title}
-            </h4>
-          )}
-          <div className="text-xs text-gray-700 whitespace-pre-wrap overflow-y-auto max-h-full">
-            {note.content}
+        <div className="note-content flex-1 overflow-hidden">
+          {/* Title */}
+          <div className="mb-1" onClick={(e) => e.stopPropagation()}>
+            {isEditingTitle ? (
+              <input
+                ref={titleInputRef}
+                type="text"
+                value={tempTitle}
+                onChange={(e) => setTempTitle(e.target.value)}
+                onBlur={handleTitleSave}
+                onKeyDown={handleTitleKeyDown}
+                className="w-full font-semibold text-sm text-gray-800 bg-transparent border-b border-gray-400 outline-none"
+                placeholder="Add title..."
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <h4 
+                className="font-semibold text-sm text-gray-800 truncate cursor-text hover:bg-white/20 px-1 -mx-1 rounded"
+                onClick={() => {
+                  setTempTitle(note.title || '');
+                  setIsEditingTitle(true);
+                }}
+                title="Click to edit title"
+              >
+                {note.title || <span className="text-gray-400 italic">Click to add title</span>}
+              </h4>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+            {isEditingContent ? (
+              <textarea
+                ref={contentTextareaRef}
+                value={tempContent}
+                onChange={(e) => setTempContent(e.target.value)}
+                onBlur={handleContentSave}
+                onKeyDown={handleContentKeyDown}
+                className="w-full h-full text-xs text-gray-700 bg-transparent resize-none outline-none"
+                placeholder="Write your note..."
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <div 
+                className="text-xs text-gray-700 whitespace-pre-wrap overflow-y-auto max-h-full cursor-text hover:bg-white/20 p-1 -m-1 rounded"
+                onClick={() => {
+                  setTempContent(note.content || '');
+                  setIsEditingContent(true);
+                }}
+                title="Click to edit content"
+              >
+                {note.content || <span className="text-gray-400 italic">Click to add content</span>}
+              </div>
+            )}
           </div>
         </div>
         
@@ -202,179 +333,10 @@ function StickyNote({
           title="Drag to resize"
         />
       </div>
-
-      {/* Edit Modal */}
-      {isEditing && (
-        <NoteEditModal
-          note={note}
-          onSave={(updatedNote) => {
-            onEdit(note.id, updatedNote);
-            setIsEditing(false);
-            // Update local size state if changed
-            if (updatedNote.width !== size.width || updatedNote.height !== size.height) {
-              setSize({ width: updatedNote.width || size.width, height: updatedNote.height || size.height });
-            }
-          }}
-          onClose={() => setIsEditing(false)}
-        />
-      )}
     </div>
   );
 }
 
-function NoteEditModal({ note, onSave, onClose }) {
-  const [formData, setFormData] = useState({
-    title: note.title || '',
-    content: note.content || '',
-    color: note.color || NOTE_COLORS[0].value,
-    width: note.width || 200,
-    height: note.height || 150
-  });
-
-  const titleInputRef = useRef(null);
-  const contentTextareaRef = useRef(null);
-  const modalRef = useRef(null);
-
-  useEffect(() => {
-    // Focus the title input when modal opens
-    if (titleInputRef.current) {
-      setTimeout(() => {
-        titleInputRef.current.focus();
-      }, 100);
-    }
-
-    // Position modal to avoid screen edges
-    if (modalRef.current) {
-      const modal = modalRef.current;
-      const rect = modal.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      // Check if modal would go off-screen and adjust
-      if (rect.right > viewportWidth - 20) {
-        modal.style.transform = `translateX(${viewportWidth - rect.right - 20}px)`;
-      }
-      if (rect.bottom > viewportHeight - 20) {
-        modal.style.transform += ` translateY(${viewportHeight - rect.bottom - 20}px)`;
-      }
-      if (rect.left < 20) {
-        modal.style.transform = `translateX(${20 - rect.left}px)`;
-      }
-      if (rect.top < 20) {
-        modal.style.transform += ` translateY(${20 - rect.top}px)`;
-      }
-    }
-  }, []);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
-  // Prevent modal close when clicking on form elements
-  const handleModalClick = (e) => {
-    e.stopPropagation();
-  };
-
-  // Handle textarea interaction
-  const handleTextareaInteraction = (e) => {
-    console.log('Textarea interaction:', e.type);
-    e.stopPropagation();
-    
-    // Ensure textarea gets focus
-    const textarea = contentTextareaRef.current;
-    if (textarea && e.type === 'click') {
-      setTimeout(() => {
-        textarea.focus();
-      }, 0);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div ref={modalRef} className="bg-writer-surface dark:bg-dark-surface rounded-lg p-6 w-96 max-w-[90vw] shadow-xl relative" onClick={handleModalClick} role="dialog" aria-modal="true">
-        <h3 className="text-lg font-semibold mb-4 text-writer-heading dark:text-dark-heading">Edit Note</h3>
-        
-        <form onSubmit={handleSubmit} className="space-y-4" style={{ position: 'relative', zIndex: 1 }}>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-writer-text dark:text-dark-text">Title (optional)</label>
-            <input
-              ref={titleInputRef}
-              type="text"
-              value={formData.title}
-              onChange={(e) => {
-                console.log('Edit Title input changed:', e.target.value);
-                setFormData(prev => ({ ...prev, title: e.target.value }));
-              }}
-              onClick={(e) => {
-                console.log('Edit Title input clicked');
-                e.stopPropagation();
-              }}
-              className="w-full px-3 py-2 border border-writer-border dark:border-dark-border rounded-md bg-writer-bg dark:bg-dark-bg text-writer-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-writer-accent dark:focus:ring-dark-accent"
-              placeholder="Note title..."
-              tabIndex={1}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-writer-text dark:text-dark-text">Content</label>
-            <textarea
-              ref={contentTextareaRef}
-              value={formData.content}
-              onChange={(e) => {
-                console.log('Content textarea changed:', e.target.value);
-                setFormData(prev => ({ ...prev, content: e.target.value }));
-              }}
-              onClick={handleTextareaInteraction}
-              onMouseDown={handleTextareaInteraction}
-              onFocus={(e) => console.log('Textarea focused')}
-              className="w-full px-3 py-2 border border-writer-border dark:border-dark-border rounded-md h-24 resize-none bg-writer-bg dark:bg-dark-bg text-writer-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-writer-accent dark:focus:ring-dark-accent"
-              placeholder="Write your note..."
-              required
-              tabIndex={2}
-              autoFocus
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-writer-text dark:text-dark-text">Color</label>
-            <div className="grid grid-cols-4 gap-2">
-              {NOTE_COLORS.map(color => (
-                <button
-                  key={color.value}
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, color: color.value }))}
-                  className={`w-8 h-8 rounded border-2 transition-all duration-200 ${
-                    formData.color === color.value ? 'ring-2 ring-writer-accent dark:ring-dark-accent scale-110' : 'hover:scale-105'
-                  }`}
-                  style={{ backgroundColor: color.value, borderColor: color.border }}
-                  title={color.name}
-                />
-              ))}
-            </div>
-          </div>
-
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn-secondary"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn-primary"
-            >
-              Save
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function NoteCreateModal({ onSave, onClose, isSaving }) {
   const [formData, setFormData] = useState({
@@ -411,14 +373,8 @@ function NoteCreateModal({ onSave, onClose, isSaving }) {
             <label className="block text-sm font-medium mb-1 text-writer-text dark:text-dark-text">Content</label>
             <textarea
               value={formData.content}
-              onChange={(e) => {
-                console.log('Content textarea changed:', e.target.value);
-                setFormData(prev => ({ ...prev, content: e.target.value }));
-              }}
-              onClick={(e) => {
-                console.log('Content textarea clicked');
-                e.stopPropagation();
-              }}
+              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+              onClick={(e) => e.stopPropagation()}
               className="w-full px-3 py-2 border border-writer-border dark:border-dark-border rounded-md h-24 resize-none bg-writer-bg dark:bg-dark-bg text-writer-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-writer-accent dark:focus:ring-dark-accent"
               placeholder="Write your note..."
               required

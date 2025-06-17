@@ -122,12 +122,20 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
             <p className="text-sm text-writer-subtle dark:text-dark-subtle">Loading structure...</p>
           </div>
         ) : scenes.length === 0 ? (
-          <div className="p-4 text-center">
-            <Eye className="w-8 h-8 text-writer-subtle dark:text-dark-subtle mx-auto mb-3" />
-            <h4 className="font-medium text-writer-heading dark:text-dark-heading mb-2">No scenes yet</h4>
-            <p className="text-sm text-writer-subtle dark:text-dark-subtle mb-4">
-              Structure your chapter by adding scenes and beats in the outline view.
+          <div className="p-6 text-center">
+            <Eye className="w-12 h-12 text-writer-subtle dark:text-dark-subtle mx-auto mb-4" />
+            <h4 className="font-medium text-writer-heading dark:text-dark-heading mb-2">No scene structure yet</h4>
+            <p className="text-sm text-writer-subtle dark:text-dark-subtle mb-4 leading-relaxed">
+              This chapter doesn't have any scenes or beats defined in the outline. 
+              <br />Add scenes and beats in the <strong>Outline</strong> tab to see detailed structure here.
             </p>
+            <div className="bg-writer-info/10 dark:bg-dark-info/10 border border-writer-info/20 dark:border-dark-info/20 rounded-lg p-3 text-left">
+              <p className="text-xs text-writer-info dark:text-dark-info">
+                <strong>Tip:</strong> In the outline, expand this chapter and add:
+                <br />• <strong>Scenes</strong> for major story moments
+                <br />• <strong>Beats</strong> for specific actions within scenes
+              </p>
+            </div>
           </div>
         ) : (
           <div className="p-3 space-y-2">
@@ -158,33 +166,78 @@ function ChapterGuidePanel({ novelId, chapter, onClose }) {
                           <h4 className="font-medium text-sm text-green-800 dark:text-green-200 truncate">
                             {scene.title}
                           </h4>
-                          {beats.length > 0 && (
-                            <p className="text-xs text-green-600 dark:text-green-400">
-                              {beats.length} beat{beats.length !== 1 ? 's' : ''}
-                            </p>
-                          )}
+                          <div className="flex items-center space-x-3 text-xs">
+                            {beats.length > 0 && (
+                              <span className="text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/30 px-2 py-0.5 rounded-full">
+                                {beats.length} beat{beats.length !== 1 ? 's' : ''}
+                              </span>
+                            )}
+                            {scene.content && (
+                              <span className="text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/30 px-2 py-0.5 rounded-full">
+                                Notes
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
                     {scene.description && (
-                      <p className="text-xs text-green-700 dark:text-green-300 mt-2 ml-6 truncate">
-                        {scene.description}
-                      </p>
+                      <div className="mt-2 ml-6">
+                        <p className="text-xs text-green-700 dark:text-green-300 font-medium">Summary:</p>
+                        <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                          {scene.description}
+                        </p>
+                      </div>
+                    )}
+                    {scene.content && (
+                      <div className="mt-2 ml-6">
+                        <p className="text-xs text-green-700 dark:text-green-300 font-medium">Notes:</p>
+                        <p className="text-xs text-green-700 dark:text-green-300 mt-1 whitespace-pre-line">
+                          {scene.content}
+                        </p>
+                      </div>
                     )}
                   </div>
+
+                  {/* Collapsed beats hint */}
+                  {!isExpanded && beats.length > 0 && (
+                    <div className="px-3 py-2 bg-orange-50/20 dark:bg-orange-900/5 border-t border-orange-200/30 dark:border-orange-800/20">
+                      <p className="text-xs text-orange-600 dark:text-orange-400 italic">
+                        Click to expand and see {beats.length} beat{beats.length !== 1 ? 's' : ''} with details
+                      </p>
+                    </div>
+                  )}
+
+                  {/* No beats message when expanded */}
+                  {isExpanded && beats.length === 0 && (
+                    <div className="px-3 py-4 bg-orange-50/20 dark:bg-orange-900/5 border-t border-orange-200/30 dark:border-orange-800/20 text-center">
+                      <p className="text-xs text-orange-600 dark:text-orange-400 italic">
+                        No beats defined for this scene yet. Add beats in the outline to break down the action.
+                      </p>
+                    </div>
+                  )}
 
                   {/* Beats (expandable) */}
                   {isExpanded && beats.length > 0 && (
                     <div className="p-3 bg-orange-50/30 dark:bg-orange-900/10 space-y-2">
                       {beats.map(beat => (
-                        <div key={beat.id} className="flex items-center justify-between bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/30 rounded p-2">
-                          <div className="flex items-center space-x-2 flex-1 min-w-0">
-                            <div className="w-3 h-3 bg-orange-100 dark:bg-orange-800/50 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                        <div key={beat.id} className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/30 rounded p-3">
+                          <div className="flex items-start space-x-2">
+                            <div className="w-4 h-4 bg-orange-100 dark:bg-orange-800/50 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">
                               {beat.order_index || 1}
                             </div>
-                            <span className="text-sm text-orange-800 dark:text-orange-200 truncate">
-                              {beat.title}
-                            </span>
+                            <div className="flex-1 min-w-0">
+                              <h5 className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                                {beat.title}
+                              </h5>
+                              {beat.description && (
+                                <div className="mt-1">
+                                  <p className="text-xs text-orange-700 dark:text-orange-300 whitespace-pre-line">
+                                    {beat.description}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}

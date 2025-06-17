@@ -126,8 +126,11 @@ function WritingInterface() {
 
   const ensureOutlineChapterConsistency = async (currentChapters = null) => {
     try {
+      console.log('🔍 Checking outline-chapter consistency...');
+      
       // Use provided chapters or fetch fresh data
       const chaptersToCheck = currentChapters || await axios.get(`/api/novels/${id}/chapters`).then(r => r.data);
+      console.log('📖 Current chapters:', chaptersToCheck.map(c => ({ id: c.id, title: c.title })));
       
       // Get outline sections to check for orphaned chapter references
       const outlineResponse = await axios.get(`/api/novels/${id}/outlines`);
@@ -136,6 +139,12 @@ function WritingInterface() {
         const sectionsResponse = await axios.get(`/api/outlines/${outline.id}/sections`);
         const chapterSections = sectionsResponse.data.filter(s => s.level === 1);
         
+        console.log('📋 Chapter sections in outline:', chapterSections.map(s => ({ 
+          id: s.id, 
+          title: s.title, 
+          chapter_id: s.chapter_id 
+        })));
+        
         // Check for chapter sections without valid chapter_id references
         const orphanedSections = chapterSections.filter(s => {
           return s.chapter_id && !chaptersToCheck.find(ch => ch.id === s.chapter_id);
@@ -143,6 +152,7 @@ function WritingInterface() {
         
         // Clear orphaned references
         for (const section of orphanedSections) {
+          console.log('🧹 Cleaning up orphaned chapter reference:', section.title, 'chapter_id:', section.chapter_id);
           await axios.put(`/api/sections/${section.id}`, {
             ...section,
             chapter_id: null
@@ -150,11 +160,19 @@ function WritingInterface() {
         }
         
         if (orphanedSections.length > 0) {
-          console.log(`Cleaned up ${orphanedSections.length} orphaned chapter references in outline`);
+          console.log(`🧹 Cleaned up ${orphanedSections.length} orphaned chapter references in outline`);
+          // Refresh acts after cleanup to reflect changes
+          await fetchActs();
+        } else {
+          console.log('✅ No orphaned references found');
         }
+      } else {
+        console.log('ℹ️ No outlines found - consistency check skipped');
       }
+      
+      console.log('✅ Outline-chapter consistency check completed');
     } catch (error) {
-      console.warn('Failed to ensure outline-chapter consistency:', error);
+      console.warn('❌ Failed to ensure outline-chapter consistency:', error);
     }
   };
 
@@ -247,6 +265,7 @@ function WritingInterface() {
           };
         });
         
+        console.log(`🎭 Loaded ${actsWithChapters.length} acts with chapters`);
         setActs(actsWithChapters);
       } else {
         setActs([]);
@@ -348,12 +367,9 @@ function WritingInterface() {
           chapter_id: newChapter.id
         });
         
-        // Refresh chapters and acts to get accurate data and prevent state conflicts
-        // Note: Don't refresh immediately to prevent outline reset
-        setTimeout(async () => {
-          await fetchChapters();
-          await fetchActs();
-        }, 100);
+        // Immediate refresh to ensure sidebar shows updated data
+        await fetchChapters();
+        await fetchActs();
         
         showToast(`Chapter "${newChapter.title}" created from outline`, 'success');
         return newChapter;
@@ -368,30 +384,29 @@ function WritingInterface() {
           order_index: section.order_index
         });
         
-        // Refresh chapters and acts to ensure consistency
-        setTimeout(async () => {
-          await fetchChapters();
-          await fetchActs();
-        }, 100);
+        // Immediate refresh to ensure consistency
+        await fetchChapters();
+        await fetchActs();
         
         showToast(`Chapter "${section.title}" updated from outline`, 'success');
       } else if (action === 'delete' && section.chapter_id) {
         const chapterTitle = chapters.find(ch => ch.id === section.chapter_id)?.title || 'Chapter';
         
+        console.log(`🗑️ Deleting chapter ${section.chapter_id} ("${chapterTitle}") from outline deletion`);
+        
         // Delete the corresponding chapter
         await axios.delete(`/api/chapters/${section.chapter_id}`);
         
-        // Refresh chapters and acts to ensure consistency
-        setTimeout(async () => {
-          await fetchChapters();
-          await fetchActs();
-        }, 100);
-        
-        // Clear selected chapter if it was deleted
+        // Clear selected chapter if it was deleted BEFORE refresh
         if (selectedChapter?.id === section.chapter_id) {
           setSelectedChapter(null);
         }
         
+        // Immediate refresh - don't use setTimeout
+        await fetchChapters();
+        await fetchActs();
+        
+        console.log(`✅ Chapter "${chapterTitle}" deleted and data refreshed`);
         showToast(`Chapter "${chapterTitle}" deleted from outline`, 'success');
       }
     } catch (error) {
@@ -399,19 +414,23 @@ function WritingInterface() {
       showToast('Failed to sync outline changes with chapters', 'error');
       // Always refresh to ensure consistency
       await fetchChapters();
+      await fetchActs();
     }
   };
 
   // Refresh function to ensure consistency
   const refreshAfterSync = async () => {
     try {
+      console.log('🔄 Refreshing after sync...');
       await fetchChapters();
+      await fetchActs();
       // Force a refresh of the outline if it's open
       // The outline will refresh its sections when it detects chapter changes
     } catch (error) {
       console.error('Error refreshing after sync:', error);
     }
   };
+
 
   const handleChapterCreate = async (title) => {
     try {
@@ -671,12 +690,12 @@ function WritingInterface() {
         <ResizableSidebar initialWidth={280} minWidth={240} maxWidth={600}>
         <div className="h-full flex flex-col bg-writer-muted dark:bg-dark-sidebar">
           {/* Header */}
-          <div className="px-4 py-4 border-b border-writer-border dark:border-dark-border bg-writer-surface dark:bg-dark-panel">
+          <div className="px-4 py-4 border-b border-writer-border dark:border-dark-border bg-writer-muted dark:bg-dark-sidebar">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <button
                   onClick={() => navigate('/')}
-                  className="p-1 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-surface dark:hover:bg-dark-panel rounded mr-2"
+                  className="p-1 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-border dark:hover:bg-dark-border rounded mr-2"
                   title="Back to novels"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -686,14 +705,14 @@ function WritingInterface() {
               <div className="flex items-center space-x-1">
                 <button
                   onClick={openSearch}
-                  className="p-2 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-surface dark:hover:bg-dark-panel rounded"
+                  className="p-2 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-border dark:hover:bg-dark-border rounded"
                   title="Search (Ctrl+K)"
                 >
                   <Search className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleExport}
-                  className="p-2 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-surface dark:hover:bg-dark-panel rounded"
+                  className="p-2 text-writer-subtle dark:text-dark-subtle hover:text-writer-text dark:hover:text-dark-text hover:bg-writer-border dark:hover:bg-dark-border rounded"
                   title="Export novel"
                 >
                   <Download className="w-4 h-4" />

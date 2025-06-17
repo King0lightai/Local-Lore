@@ -3,9 +3,60 @@
   <h3><em>"It's like Magic"</em></h3>
 </div>
 
-A comprehensive, self-hosted novel writing application with AI assistance that integrates seamlessly with Claude Desktop. Local Lore helps authors organize their writing process, track story elements, and leverage AI for creative assistance—all while keeping your data private and local.
+The Local Lore MCP provides a comprehensive suite of tools for creative writing and world-building, particularly focused on novel development. Here's what you can do with it:
 
-## ✨ Key Features
+### 📚 Novel & Chapter Management
+- View all your novels and get detailed information about specific novels
+- Access and update chapter content and titles
+- Get comprehensive story summaries and context
+- Professional writing environment with rich text editing
+- Auto-save with intelligent debouncing
+- Real-time statistics and version history
+
+### 🏗️ World-Building Elements
+- **Characters**: Add, view, and manage character profiles with descriptions and traits
+- **Places**: Create and organize locations in your story world
+- **Events**: Track important story events and link them to specific chapters
+- **Lore**: Build rich background knowledge with categorized lore entries
+- **Items**: Catalog important objects, artifacts, or tools in your story
+- **Smart Organization**: Tabbed interface with search and categorization
+
+### 📝 Story Structure & Planning
+- **Outlines**: Create detailed, hierarchical outlines with sections and subsections
+- **Manuscript Analysis**: Automatically generate outlines from existing chapters
+- **Story Context**: Get comprehensive overviews of all story elements at once
+- **Chapter Guide**: Read-only contextual guide showing scene and beat structure
+- **Bi-directional Sync**: Automatic synchronization between outline and chapter views
+
+### 🤖 AI Writing Assistance
+- **AI Prompts**: Create and manage custom writing prompts for different purposes (style, character development, genre guidelines, etc.)
+- **Prompt Execution**: Run AI prompts with full story context to get targeted writing assistance
+- **Writing Context**: Get comprehensive context including prompts and story elements for AI collaboration
+- **Claude Desktop Integration**: Direct MCP (Model Context Protocol) server connection
+- **Context-Aware AI**: Automatically provides relevant story elements as context
+- **Multiple AI Actions**: Edit, review, continue, and replace text functionality
+
+### 📊 Content Analysis
+- **Chapter Analysis**: Automatically extract and add story elements (characters, places, events) from existing chapter content
+- **Story Summaries**: Generate comprehensive summaries including plot progression and character development
+- **Visual Notes System**: Draggable, resizable notes with color coding
+- **Data Integrity**: SQLite database with proper relationship management
+
+### 🔍 Search & Navigation
+- **Global Search**: Search across all chapters and story elements
+- **Text Highlighting**: In-editor search result highlighting
+- **Quick Navigation**: Jump between chapters, characters, and places
+- **Cross-references**: Navigate between related story elements
+
+### 📱 Export & Data Management
+- **Multiple Export Formats**: JSON, Markdown, HTML, and plain text
+- **Complete Data Export**: Export all story elements with metadata
+- **Desktop Application**: Native Electron app for Windows, Mac, and Linux
+- **Browser Extension**: Alternative integration for Claude Desktop web interface
+
+The system is designed to help you maintain consistency across complex fictional worlds while providing AI-powered assistance that understands your specific story context. It's particularly powerful for managing long-form fiction with multiple characters, locations, and plot threads.
+
+## 🚀 Installation & Setup
 
 ### 📝 **Professional Writing Environment**
 - **Rich Text Editor**: TipTap-powered editor with professional formatting tools

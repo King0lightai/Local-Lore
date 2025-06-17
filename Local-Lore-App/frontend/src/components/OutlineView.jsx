@@ -1354,8 +1354,9 @@ function OutlineView({ novelId, chapters = [], onClose, onSyncToChapter, onRefre
       await axios.delete(`/api/sections/${sectionToDelete.id}`);
       await fetchSections(selectedOutline.id);
       
-      // Refresh chapters to ensure sync
+      // Force refresh of chapters and acts to ensure sidebar sync
       if (onRefreshChapters) {
+        console.log('🔄 Refreshing chapters and acts after outline deletion');
         await onRefreshChapters();
       }
       
