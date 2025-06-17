@@ -1,7 +1,5 @@
 # Local Lore - AI-Powered Novel Writing Suite
 
-<div align="center">
-  <img src="Logo.png" alt="Local Lore Logo" width="200"/>
   <h3><em>"It's like Magic"</em></h3>
 </div>
 
