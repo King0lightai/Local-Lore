@@ -444,3 +444,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **🔒 Privacy Note**: Local Lore is a self-hosted application. Your writing data never leaves your machine unless you choose to export it. AI features communicate only with your local Claude Desktop installation.
 
 **✨ Happy Writing!** Create your next masterpiece with Local Lore's powerful combination of traditional writing tools and cutting-edge AI assistance.
+
+**Support** 
+<a href="https://coff.ee/king0lightai" target="_blank">
+    <img width="545" alt="black-button" src="https://github.com/user-attachments/assets/37e35acb-7750-4c21-a3bc-99bdb7036a0d" />
+</a>
+
